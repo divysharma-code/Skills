@@ -1,19 +1,17 @@
 # Cohere Master Skills for PMs
 
-A small, growing collection of [Claude Code](https://claude.com/claude-code) **Agent Skills** built for Product work at Cohere Health. Each skill lives in its own folder and can be dropped into `~/.claude/skills/` to use.
+A few Claude Code Agent Skills I've built for product work at Cohere Health. Each one sits in its own folder. To use it, copy the folder into `~/.claude/skills/` and call it from Claude Code.
 
-> **Internal:** references Cohere systems (Jira, internal sheets, intake architecture). Visible to CohereHealth org members. No credentials or PHI are stored here.
+Quick heads up: these lean on internal Cohere stuff (Jira, our tracking sheets, the intake architecture), so they'll only really do anything useful inside the org. Nothing sensitive is checked in here, no credentials, no PHI.
 
-## Skills
+## What's in here
 
-| Skill | What it does |
-|-------|--------------|
-| [`cohere-bug-triage`](./cohere-bug-triage) | Triages Intake production bugs (Jira board 1487): pulls the untriaged queue, classifies steps-to-reproduce, extracts auth-check specifics, matches a UAT test patient, RCAs each bug against the intake architecture to flag whether it's reproducible in UAT, and drafts comments on tickets missing steps — all into a Google Sheet. |
+**cohere-bug-triage** is the one I reach for when I'm working through Intake production bugs on Jira board 1487. It grabs the untriaged queue, figures out which tickets actually have usable steps to reproduce, pulls the auth-check details out of each one, and matches every bug to a UAT test patient. It also checks each bug against the intake architecture so you know upfront whether it's even reproducible in UAT or needs to go to eng. All of that lands in a Google Sheet, and for the tickets missing steps it'll draft a comment asking for them (you approve before anything gets posted).
 
-## Using a skill
+## Using one
 
 ```bash
 cp -R cohere-bug-triage ~/.claude/skills/
 ```
 
-Then invoke it from Claude Code (see each skill's `README.md` / `SKILL.md` for setup and prerequisites).
+Then just ask Claude Code to run it. Setup and prerequisites for each skill are in its own README / SKILL.md.
