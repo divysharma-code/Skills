@@ -2,7 +2,7 @@
 
 A few Claude Code Agent Skills I've built for product work at Cohere Health. Each one sits in its own folder. To use it, copy the folder into `~/.claude/skills/` and call it from Claude Code.
 
-Quick heads up: these lean on internal Cohere stuff (Jira, our tracking sheets, the intake architecture), so they'll only really do anything useful inside the org. Nothing sensitive is checked in here, no credentials, no PHI.
+These lean on internal Cohere systems (Jira, our tracking sheets, the intake architecture), so they'll only really do anything useful inside the org. Nothing sensitive is checked in here, no credentials, no PHI.
 
 ## What's in here
 
