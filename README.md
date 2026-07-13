@@ -1,4 +1,4 @@
-# Divy's Cohere Master Skills for PMs
+# Cohere Master Skills for PMs
 
 A small, growing collection of [Claude Code](https://claude.com/claude-code) **Agent Skills** built for Product work at Cohere Health. Each skill lives in its own folder and can be dropped into `~/.claude/skills/` to use.
 
