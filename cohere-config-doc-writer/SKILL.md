@@ -142,6 +142,28 @@ This is the opposite register from Divy's product-knowledge field guides:
   that, unlike the field-guide audience who explicitly pushed back on that
   kind of density.
 
+## Terminology consistency
+
+Check role/actor vocabulary against the reference doc before using it — not
+just the field-level facts. The source material never says "agent"; it says
+"users" or "Cohere intake staff." A generic role word that feels natural to
+write (agent, rep, operator) can be flatly wrong for this org, and it's easy
+to miss on review because the sentence still reads fine — it doesn't look
+like an error the way a broken JSON brace does.
+
+Before naming who does an action, anywhere in Context or Components:
+- Check `references/example-fax-intake-configuration.md` (or whatever page
+  you're extending) for the term it already uses for that role, and match
+  it exactly.
+- If no reference material covers that role, ask which term is correct
+  rather than defaulting to a plausible-sounding one. "Agent" specifically
+  is a bad default here — it's ambiguous with insurance agents, AI agents,
+  and call-center agents, none of which is what these docs mean.
+- Apply this to every noun describing a person or system doing something —
+  the person working the fax queue, the person setting up the client
+  config, the system component sending the notice — not just the first one
+  you write.
+
 ## If information is missing
 
 If you don't have enough context to fill in Context, a Components entry's
