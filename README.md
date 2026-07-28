@@ -1,8 +1,6 @@
 # Cohere Master Skills for PMs
 
-A mix of skills I actually use — some built specifically for product work at Cohere Health, some general-purpose (writing, research, design, decision-making) — plus plain-English product-knowledge docs. Each skill sits in its own folder — to use one, copy the folder into `~/.claude/skills/` and call it from Claude Code.
-
-The Cohere-specific ones lean on internal systems (Jira, our tracking sheets, the intake architecture) and only really do anything useful inside the org. Nothing sensitive is checked in here, no credentials, no PHI.
+Skills I use daily. That's it.
 
 ## What's in here
 
@@ -21,8 +19,6 @@ The Cohere-specific ones lean on internal systems (Jira, our tracking sheets, th
 **ram-writing-style** writes in a specific blunt, text-message-like voice for LinkedIn/social posts — short sentences, real proof, no corporate buzzwords.
 
 **the-humanizer** reviews any draft (blog, LinkedIn, email, Slack) for AI-generated patterns, scores it, and rewrites it in an authentic human voice.
-
-**ui-ux** is a design intelligence reference for web/mobile — styles, color palettes, font pairings, UX guidelines, and chart types across common stacks.
 
 **write-a-skill** is the meta-skill: walks through creating a new agent skill with proper structure, progressive disclosure, and bundled resources.
 
