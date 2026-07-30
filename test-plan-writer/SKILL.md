@@ -10,11 +10,11 @@ metadata:
 
 # Test Plan Writer
 
-Most bad test plans are acceptance criteria wearing a numbered list. They confirm the new
-thing exists, then stop. What they miss is everything that was already working.
+Most bad test plans are acceptance criteria wearing a numbered list. They confirm the new thing
+exists, then stop. What they miss is everything that was already working.
 
-A test plan walks the **end-to-end journey** a real user takes, and confirms two things: the
-new behaviour works, and **the business logic that was already there did not break**.
+A test plan walks the **end-to-end journey** a real user takes, and confirms two things: the new
+behaviour works, and **the business logic that was already there did not break**.
 
 Full method: **[PLAYBOOK.md](PLAYBOOK.md)**.
 
@@ -25,68 +25,75 @@ Full method: **[PLAYBOOK.md](PLAYBOOK.md)**.
 | **Acceptance criteria** | What should this feature do? *(a required field throws a red error)* |
 | **Test plan** | Does the whole workflow still hold, end to end, with this change in it? |
 
-If your plan has one section per AC bullet, you have written acceptance criteria in a
-different font. Restructure it as journeys.
+If your plan has one section per AC bullet, you have written acceptance criteria in a different
+font. Restructure it as journeys.
+
+## Quick start
+
+> Write a test plan for PROJ-1234.
+
+What comes back, in shape:
+
+```
+Most likely failure: requests created before the checkbox was removed.
+
+SETUP             flag state · account or record to use (placeholder if unknown)
+
+JOURNEY A         the new path, end to end — start at login, follow the value past the save
+JOURNEY B         the default path, untouched — the same flow without the new behaviour
+JOURNEY C         the round-trip — save, leave, return, edit, and every other surface
+JOURNEY D         regression for the ungated population — only if a flag or config gates it
+
+EDGE CASES        chosen by consequence, not by count
+NOT COVERED       design QA · backend assertions · work split to other tickets
+ASK ENGINEERING   which fields and collections this actually writes
+ASK PRODUCT       unresolved scope, unnamed config values, missing test data
+```
+
+Nothing is written back to the tracker until you say so.
 
 ## Workflow
 
-1. **Read the change.** The ticket, plus its parent, its comments, and any grooming notes —
-   scope is usually narrowed there, and testing something that got split out is wasted work.
+1. **Read the change** — the ticket, its parent, comments, and grooming notes. Scope is usually
+   narrowed there, and testing something that got split out is wasted work.
 
-2. **Name what actually changes**, in one sentence, and **who is affected**: which users,
-   which clients, which configurations. If a flag or config gates it, then two populations
-   exist — the ones who get the change and the ones who must not notice it.
+2. **Name what changes**, in one sentence, and **who is affected**: which users, clients,
+   configurations. If a flag gates it, two populations exist — those who get it and those who
+   must not notice.
 
 3. **Find the consequence.** What does this data *do* downstream? A field that only renders is
    low stakes. A field that decides money, routing, eligibility, or who gets notified is where
-   the real risk lives, and the journey must follow the value that far. Ask this before writing
-   a single step.
+   the risk lives, and the journey must follow the value that far. Ask before writing a step.
 
-4. **Build the journeys** (patterns in PLAYBOOK): the new path end to end · the default path
-   that must stay untouched · the round-trip through edit and re-open · the regression for
-   everyone not receiving the change.
+4. **Build the journeys** — patterns in PLAYBOOK. A and B always; C and D when they apply.
 
-5. **Weight the edge cases.** Features rarely fail on the happy path. Use the edge-case
-   generators in PLAYBOOK — pre-existing records, the removed thing, missing optional data,
-   stale state after a switch. This is where a plan earns its keep.
+5. **Weight the edge cases.** Features rarely fail on the happy path. Use the generators in
+   PLAYBOOK. This is where a plan earns its keep.
 
-6. **Draw the lanes.** State plainly what this plan does *not* cover and why — design QA,
-   backend-only assertions, work split into other tickets. An honest exclusion beats a step
-   nobody can actually run.
+6. **Draw the lanes.** Test what you are responsible for — the right data is captured, persists,
+   flows downstream, and broke nothing. Not colours, not layout. State what the plan does *not*
+   cover and why (buckets in PLAYBOOK); an honest exclusion beats a step nobody can run.
 
-7. **List what you had to ask rather than assume.** Unresolved inputs go at the bottom as
-   questions for engineering and questions for product. Do not paper over them.
+7. **List what you had to ask** rather than assume — questions for engineering, questions for
+   product, at the bottom.
 
 8. **→ Confirm before writing to the tracker.** Draft-only is the default.
-
-## The lane rule
-
-Test what you are responsible for. Typically:
-
-- **Yours (functional):** the right data is captured, it persists, it flows correctly
-  downstream, and nothing that used to work stopped working.
-- **Not yours (design QA):** colours, layout, spacing, whether a control looks right.
-- **Not clickable (backend):** field writes, payload shape, collection updates. These become
-  *questions for engineering*, not fabricated UI steps.
-
-Spending steps outside your lane pads the plan and hides the thin coverage inside it.
 
 ## Never
 
 - Never fabricate test data — an account, member, order, or record ID. An invented ID looks
-  exactly like a real one and wastes a tester's afternoon. Write a visible placeholder and say
+  exactly like a real one and wastes a tester's afternoon. Use a visible placeholder and say
   where the real value comes from.
-- Never write a step nobody can execute by clicking. If it needs a DB query or a payload
-  inspection, mark it as an engineering check.
-- Never test what the ticket explicitly split out. Cite the ticket that owns it instead.
+- Never write a step nobody can execute by clicking. If it needs a DB query or payload
+  inspection, mark it an engineering check.
+- Never test what the ticket explicitly split out. Cite the ticket that owns it.
 - Never assume which fields or collections a change writes. Ask.
 
 ## If information is missing
 
-Ask. A test plan built on an assumed field name, an assumed config scope, or an invented
-account sends someone down a path that cannot be run. Name the blank as an open question and
-let the person who knows fill it.
+Ask. A plan built on an assumed field name, an assumed config scope, or an invented account
+sends someone down a path that cannot be run. Name the blank as an open question.
 
-And read your own plan before you hand it over: if a stakeholder asks why a step exists, you
-need the answer without re-reading it. State the single most likely failure in plain language
-at the top so the point survives skimming.
+And read your own plan before handing it over: if someone asks why a step exists, you need the
+answer without re-reading it. State the single most likely failure in plain language at the top,
+so the point survives skimming.

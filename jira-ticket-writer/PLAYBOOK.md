@@ -137,10 +137,10 @@ the Architecture Card cannot supply them, that is an open question, not a guess.
 | Content | Destination |
 |---|---|
 | Acceptance criteria | **Description body**, under `## Acceptance Criteria` |
-| Test plan | **`customfield_10065`** — live, used on ~340 stories |
+| Test plan | **`customfield_10065`** — the live, widely-used field |
 | Implementation plan | `customfield_10178` — reproduce the house boilerplate **verbatim** (it is a form, not prose) |
 | Authored technical detail | Description: `## Change` / `## Behavior` / `## Engineering plan` |
-| Acceptance-criteria custom field `customfield_10720` | **Never.** Used on 1 story project-wide — writing there is technically valid and socially invisible |
+| Acceptance-criteria custom field `customfield_10720` | **Never.** Effectively unused — writing there is technically valid and socially invisible |
 | `components` | **Never.** None defined in the project |
 
 Other fields: Story Points `customfield_10024`, Team `customfield_10001`, Designer
