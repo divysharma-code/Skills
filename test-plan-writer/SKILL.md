@@ -1,7 +1,7 @@
 ---
 name: test-plan-writer
 description: "Write a test plan for a ticket, feature, or change as an end-to-end user journey rather than a checklist of acceptance criteria. Walks the workflow the way a real user would, confirms existing business logic still holds, and puts the effort on the edge cases that survive normal testing — records created before the change, the thing that got removed, missing optional data, stale state after a switch. Generates the questions to ask engineering about which fields and collections a change touches instead of guessing at them. Use when asked to write or review a test plan, a QA plan, UAT steps, a validation plan, or test cases for a ticket; when asked how to test a feature or what could break; or when a test plan reads like restated acceptance criteria and needs rewriting as a journey."
-version: 1.0.0
+version: 2.0.0
 author: Divy Sharma
 license: MIT
 metadata:
@@ -32,7 +32,37 @@ font. Restructure it as journeys.
 
 > Write a test plan for PROJ-1234.
 
-What comes back, in shape:
+Default output is the **house format** — a compact three-section doc, not the labeled framework
+below. It still uses the journey thinking and edge-case generators from PLAYBOOK.md to decide
+*what* to test; it just renders the result as a ticket-ready doc instead of a labeled block.
+
+**1. Original Test Plan (Draft)** — only if one was already given; otherwise skip straight to
+section 3 and fold this into it. One scope line, then the flow as an arrow click-path:
+
+```
+[Entry point] ----> [Step] ----> [Step] ----> "New field/dropdown will come" which contains ---> [Options]
+```
+
+Add one line of history if relevant ("existed before, got removed, bringing it back").
+
+**2. Meeting Notes**
+- *Context* — 3–5 short factual bullets: what the ticket does, what existed before, what changed.
+- *Questions asked in this meeting* — the literal questions raised, as a bullet list, including
+  any confusion/self-correction moments. Capture them; don't answer them here.
+
+**3. Test Plan**
+Repeat the scope line + arrow click-path + history note from section 1, verbatim. One `Setup:`
+line — config states, health plans, test data, login persona. A short numbered list (4–6 steps):
+one action, one expected result, per line. End with a step that repeats the flow on the
+opposite/OFF condition, to confirm nothing else changed.
+
+Plain, casual sentences, numbered lists — not prose. No "Journey A/B/C/D" or "Not Covered" /
+"Ask Engineering" headers inside the doc itself; those stay internal to how you picked the steps.
+
+### Full framework (opt-in)
+
+Use this labeled shape instead when asked for the fuller breakdown — grooming a large or risky
+change, or explicitly asked for "journeys," "edge cases," or "what's not covered":
 
 ```
 Most likely failure: requests created before the checkbox was removed.
@@ -72,7 +102,8 @@ Nothing is written back to the tracker until you say so.
 
 6. **Draw the lanes.** Test what you are responsible for — the right data is captured, persists,
    flows downstream, and broke nothing. Not colours, not layout. State what the plan does *not*
-   cover and why (buckets in PLAYBOOK); an honest exclusion beats a step nobody can run.
+   cover and why (buckets in PLAYBOOK); an honest exclusion beats a step nobody can run. Render
+   the result in the **house format** by default — the full framework only when asked for it.
 
 7. **List what you had to ask** rather than assume — questions for engineering, questions for
    product, at the bottom.

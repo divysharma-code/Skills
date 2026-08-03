@@ -8,16 +8,23 @@ the new behaviour works, and the business logic that was already there didn't br
 
 ## What one run gives you
 
-- **Four journeys** instead of a checklist: the new path end to end, the default path that must
-  stay untouched, the round-trip through edit and re-open, and a regression pass for whoever
-  isn't getting the change.
+By default, a compact **three-section doc** — Original Draft (if you gave one), Meeting Notes
+(context + the questions raised on the call), and the Test Plan itself: a scope line, a
+click-path of the flow, a setup line, and a short numbered list of action → expected-result
+steps. Ticket-ready as-is, no relabeling needed.
+
+Underneath that shape, it's still doing the rigorous thing:
+
+- **Four journeys** drive which steps make the cut: the new path end to end, the default path
+  that must stay untouched, the round-trip through edit and re-open, and a regression pass for
+  whoever isn't getting the change.
 - **Edge cases chosen by consequence** — records created before the change shipped, whatever got
-  removed, missing optional data, stale state after a toggle. The failures that survive normal
-  testing rounds.
-- **Honest exclusions.** What this plan doesn't cover and why: design QA, backend assertions,
-  work split into other tickets. An unrunnable step is worse than an absent one.
+  removed, missing optional data, stale state after a toggle.
 - **Questions instead of guesses** — the specific things to ask an engineer about which fields
   and collections a change touches, rather than an invented field name you'd have to defend.
+
+Ask for the full labeled breakdown (journeys, edge cases, exclusions spelled out) when grooming a
+larger or riskier change — the compact doc is the default, not the only mode.
 
 It follows the value past the save. A field that only renders is low stakes; a field that
 decides money, routing, or who gets notified is where the journey has to go.
