@@ -121,7 +121,29 @@ Read two or three recent well-regarded plans on the same team and mirror them.
 
 ---
 
-## 6. Adapting this to your organisation
+## 6. Common assumption traps
+
+Step 5 of the Workflow asks you to check the described test approach against real docs before
+trusting it. This is where that checking itself goes wrong. Read this list before you turn a
+finding into a flagged gap — a wrong catch sends someone chasing a question that doesn't apply,
+which is worse than not raising it at all.
+
+| Trap | What it looks like | Fix |
+|---|---|---|
+| **Wrong population** | A risk documented for one group (e.g. non-portal users with no account) gets applied to a different group (e.g. SSO users) because the two sit in the same doc or the same initiative. | Check exactly who the original risk was written about before reusing it for someone else. |
+| **Stale doc, current ticket** | An old planning or review doc scored a *broader* initiative as risky or unready; the ticket in front of you may be a narrower, already-resolved slice of it. | Confirm the ticket's actual scope before importing an old doc's verdict wholesale. |
+| **Proxy field, not the real gate** | A manual test edits a field that happens to change the outcome, but isn't the field the code actually branches on. | Ask which field or flag the code checks — don't infer it from what worked once. |
+| **Confident tone, no source** | A question sounds sharp because it's specific, not because it's grounded in something real. | Every open question should point at a doc, a flag, or a line someone actually said — not a hunch dressed up as diligence. |
+
+### Self-update
+
+After using this skill, if you (or the person you handed the plan to) catch a trap that isn't
+listed above, add a row here — pattern, what it looked like, the fix — instead of only noting it
+somewhere private. The next ticket benefits, not just this one.
+
+---
+
+## 7. Adapting this to your organisation
 
 The method is portable; four inputs are local. Answer these once and reuse them.
 
