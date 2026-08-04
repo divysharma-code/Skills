@@ -1,7 +1,7 @@
 ---
 name: test-plan-writer
 description: "Write a test plan for a ticket, feature, or change as an end-to-end user journey rather than a checklist of acceptance criteria. Walks the workflow the way a real user would, confirms existing business logic still holds, and puts the effort on the edge cases that survive normal testing — records created before the change, the thing that got removed, missing optional data, stale state after a switch. Generates the questions to ask engineering about which fields and collections a change touches instead of guessing at them. Use when asked to write or review a test plan, a QA plan, UAT steps, a validation plan, or test cases for a ticket; when asked how to test a feature or what could break; or when a test plan reads like restated acceptance criteria and needs rewriting as a journey."
-version: 3.0.0
+version: 3.1.0
 author: Divy Sharma
 license: MIT
 metadata:
@@ -12,7 +12,8 @@ metadata:
 
 | Version | Date | Changes |
 |---|---|---|
-| **v3.0.0** | **2026-08-04** | **Context-first check + scoring.** Added a context-first pass before building journeys: read full context (not just a summary), name what changed in three lines (before/now/unchanged), state how linked tickets connect, and check the described test approach against real architecture/ownership/flag docs before trusting it. Added a migration/linked-ticket house-format variant (`Before:`/`Now:`/`What changed:`/`Why test:` lines + arrow-chain ticket linkage). Added a scoring pass (Context Clarity, Assumption-Checking, Coverage, Question Sharpness) with the rule that a misapplied catch doesn't count. Added the Common Assumption Traps library + self-update loop to PLAYBOOK.md. Source: an Okta→Cognito notification-migration test plan spanning three linked tickets, where an initial "assumption check" turned out to apply a risk from the wrong user population — caught, corrected, and turned into a reusable trap instead of a one-off fix. |
+| **v3.1.0** | **2026-08-04** | **One default shape, not two.** Collapsed the old 3-section house format (Original Draft / Meeting Notes / Test Plan) and the migration-only variant into a single default template used every time, regardless of ticket count: `Test Plan` / `Assigned to` / `Tickets` / `Problem:` one-liner / `What is [X]?` (or `[X] and [Y]?` for linked tickets) / `Setup:` / `Steps to test tickets` / `Open questions`. If a draft was already given, it's folded silently into "What is X?" and "Steps" — it no longer gets reproduced as its own section. `Before:`/`Now:`/`What changed:`/`Why test:` lines and the arrow-chain ticket linkage are now the default explainer shape for every plan, not an opt-in for migrations only. Source: Divy asking for the same structure on a single-ticket plan (IPS-2623) that had been used for a 3-ticket migration plan — the two formats were an unrequested distinction the skill invented, not something he asked for. |
+| v3.0.0 | 2026-08-04 | **Context-first check + scoring.** Added a context-first pass before building journeys: read full context (not just a summary), name what changed in three lines (before/now/unchanged), state how linked tickets connect, and check the described test approach against real architecture/ownership/flag docs before trusting it. Added a migration/linked-ticket house-format variant (`Before:`/`Now:`/`What changed:`/`Why test:` lines + arrow-chain ticket linkage). Added a scoring pass (Context Clarity, Assumption-Checking, Coverage, Question Sharpness) with the rule that a misapplied catch doesn't count. Added the Common Assumption Traps library + self-update loop to PLAYBOOK.md. Source: an Okta→Cognito notification-migration test plan spanning three linked tickets, where an initial "assumption check" turned out to apply a risk from the wrong user population — caught, corrected, and turned into a reusable trap instead of a one-off fix. |
 | v2.0.0 | 2026-08-03 | Default to a compact house-format doc instead of the labeled framework. |
 | v1.0.0 | 2026-07-30 | Initial skill. |
 
@@ -42,61 +43,51 @@ font. Restructure it as journeys.
 
 > Write a test plan for PROJ-1234.
 
-Default output is the **house format** — a compact three-section doc, not the labeled framework
-below. It still uses the journey thinking and edge-case generators from PLAYBOOK.md to decide
-*what* to test; it just renders the result as a ticket-ready doc instead of a labeled block.
-
-**1. Original Test Plan (Draft)** — only if one was already given; otherwise skip straight to
-section 3 and fold this into it. One scope line, then the flow as an arrow click-path:
+One default shape, every time — a single ticket or several, a plain feature or a migration.
+Keep the explainer lines as lines, not prose; this is the one place bullet-dash formatting is
+dropped on purpose. It still uses the journey thinking and edge-case generators from PLAYBOOK.md
+to decide *what* to test — this just renders the result as a ticket-ready doc:
 
 ```
-[Entry point] ----> [Step] ----> [Step] ----> "New field/dropdown will come" which contains ---> [Options]
-```
+Test Plan
+Assigned to - [name, or a visible placeholder if unknown — never invent one]
+Tickets - [ticket key(s)]
 
-Add one line of history if relevant ("existed before, got removed, bringing it back").
+Problem: (one-line summary of what's being changed)
 
-**2. Meeting Notes**
-- *Context* — 3–5 short factual bullets: what the ticket does, what existed before, what changed.
-- *Questions asked in this meeting* — the literal questions raised, as a bullet list, including
-  any confusion/self-correction moments. Capture them; don't answer them here.
+What is [X]? — or "What is [X] and [Y]?" when two or more tickets are linked
 
-**3. Test Plan**
-Repeat the scope line + arrow click-path + history note from section 1, verbatim. One `Setup:`
-line — config states, health plans, test data, login persona. A short numbered list (4–6 steps):
-one action, one expected result, per line. End with a step that repeats the flow on the
-opposite/OFF condition, to confirm nothing else changed.
-
-Plain, casual sentences, numbered lists — not prose. No "Journey A/B/C/D" or "Not Covered" /
-"Ask Engineering" headers inside the doc itself; those stay internal to how you picked the steps.
-
-### Migration / linked-ticket variant (opt-in)
-
-Use this shape instead when the change is a service-to-service migration, an infra swap, or the
-work spans multiple linked tickets (one blocked another, one caused another). Keep these as
-lines, not prose — this is the one place bullet-dash formatting is dropped on purpose:
-
-```
-What is [X] and [Y]?
-
-[Ticket A] — [short label]
+[Ticket A] — [short label; omit the label entirely when there's only one ticket]
 Before: what it used to do
 Now: what it does instead
 What changed: the one thing that's actually different
 What didn't change: everything else — say it explicitly
 Why test: the reason this needs checking at all
 
-[Ticket B] — [short label]
-Before: ...
-Now: ...
-...
+[Ticket B] — [short label] (repeat the five lines above per linked ticket)
 
-How they connect
+How they connect (only when 2+ tickets are linked)
 [Ticket A] → [what happened while testing it] → [why Ticket B exists]
 So testing A end-to-end also proves B works. One test plan, N tickets.
 
-Steps to test
-1. ...
+Setup: config states, health plans, test data, login persona.
+
+Steps to test tickets
+1. one action, one expected result, per line
+...
+End with a step that repeats the flow on the opposite/OFF condition, to confirm nothing else changed.
+
+Open questions
+1. anything unclear from Workflow step 5 — sharp and grounded, one per line.
 ```
+
+If Divy hands you his own draft first, don't reproduce it as a separate "original draft" section
+— fold it straight into "What is X?" and "Steps to test," the same as if you'd derived it
+yourself from a ticket or a call. The draft is input, not part of the output shape.
+
+No "Journey A/B/C/D" or "Not Covered" / "Ask Engineering" headers inside the doc itself — those
+stay internal to how you picked the steps, and surface only as the plain numbered list and the
+Open Questions section above.
 
 ### Full framework (opt-in)
 
