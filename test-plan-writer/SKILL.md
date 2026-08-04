@@ -1,7 +1,7 @@
 ---
 name: test-plan-writer
 description: "Write a test plan for a ticket, feature, or change as an end-to-end user journey rather than a checklist of acceptance criteria. Walks the workflow the way a real user would, confirms existing business logic still holds, and puts the effort on the edge cases that survive normal testing — records created before the change, the thing that got removed, missing optional data, stale state after a switch. Generates the questions to ask engineering about which fields and collections a change touches instead of guessing at them. Use when asked to write or review a test plan, a QA plan, UAT steps, a validation plan, or test cases for a ticket; when asked how to test a feature or what could break; or when a test plan reads like restated acceptance criteria and needs rewriting as a journey."
-version: 3.1.0
+version: 3.2.0
 author: Divy Sharma
 license: MIT
 metadata:
@@ -12,7 +12,8 @@ metadata:
 
 | Version | Date | Changes |
 |---|---|---|
-| **v3.1.0** | **2026-08-04** | **One default shape, not two.** Collapsed the old 3-section house format (Original Draft / Meeting Notes / Test Plan) and the migration-only variant into a single default template used every time, regardless of ticket count: `Test Plan` / `Assigned to` / `Tickets` / `Problem:` one-liner / `What is [X]?` (or `[X] and [Y]?` for linked tickets) / `Setup:` / `Steps to test tickets` / `Open questions`. If a draft was already given, it's folded silently into "What is X?" and "Steps" — it no longer gets reproduced as its own section. `Before:`/`Now:`/`What changed:`/`Why test:` lines and the arrow-chain ticket linkage are now the default explainer shape for every plan, not an opt-in for migrations only. Source: Divy asking for the same structure on a single-ticket plan (IPS-2623) that had been used for a 3-ticket migration plan — the two formats were an unrequested distinction the skill invented, not something he asked for. |
+| **v3.2.0** | **2026-08-04** | **Written for the person clicking, and grounded in the diff.** Two additions. (1) **No coding language in the plan body** — field names, status codes, hook names, repo and PR numbers, and language trivia go in a Reference footer, never in a step. Every step now answers *where to go / what to do / how it should look*, rendered as a table once there's more than one setup phase. (2) **Read the shipped diff before writing steps** — new Workflow step 6 plus PLAYBOOK §7 *Mining the diff*. On the ticket that prompted this, the diff answered five of eight questions that had been queued for humans, and produced the highest-value step in the plan (a bug the devs hit and fixed). Added five edge-case generators (the deleted key, the loading race, the deliberately-unchanged sibling, the pre-validator record, case-insensitive vs typo-tolerant), three assumption traps (ACs contradicting shipped code, a ticket's example values treated as real, a test account that cannot match the gate), and the false-pass check. Source: a group-based access-control plan where the ticket's own acceptance criteria contradicted the merged code, and a draft config carried a one-character typo in exactly the field the feature fails silently on. |
+| v3.1.0 | 2026-08-04 | **One default shape, not two.** Collapsed the old 3-section house format (Original Draft / Meeting Notes / Test Plan) and the migration-only variant into a single default template used every time, regardless of ticket count: `Test Plan` / `Assigned to` / `Tickets` / `Problem:` one-liner / `What is [X]?` (or `[X] and [Y]?` for linked tickets) / `Setup:` / `Steps to test tickets` / `Open questions`. If a draft was already given, it's folded silently into "What is X?" and "Steps" — it no longer gets reproduced as its own section. `Before:`/`Now:`/`What changed:`/`Why test:` lines and the arrow-chain ticket linkage are now the default explainer shape for every plan, not an opt-in for migrations only. Source: Divy asking for the same structure on a single-ticket plan that had been used for a 3-ticket migration plan — the two formats were an unrequested distinction the skill invented, not something he asked for. |
 | v3.0.0 | 2026-08-04 | **Context-first check + scoring.** Added a context-first pass before building journeys: read full context (not just a summary), name what changed in three lines (before/now/unchanged), state how linked tickets connect, and check the described test approach against real architecture/ownership/flag docs before trusting it. Added a migration/linked-ticket house-format variant (`Before:`/`Now:`/`What changed:`/`Why test:` lines + arrow-chain ticket linkage). Added a scoring pass (Context Clarity, Assumption-Checking, Coverage, Question Sharpness) with the rule that a misapplied catch doesn't count. Added the Common Assumption Traps library + self-update loop to PLAYBOOK.md. Source: an Okta→Cognito notification-migration test plan spanning three linked tickets, where an initial "assumption check" turned out to apply a risk from the wrong user population — caught, corrected, and turned into a reusable trap instead of a one-off fix. |
 | v2.0.0 | 2026-08-03 | Default to a compact house-format doc instead of the labeled framework. |
 | v1.0.0 | 2026-07-30 | Initial skill. |
@@ -38,6 +39,27 @@ Full method: **[PLAYBOOK.md](PLAYBOOK.md)**.
 
 If your plan has one section per AC bullet, you have written acceptance criteria in a different
 font. Restructure it as journeys.
+
+## Write it for the person clicking
+
+The plan is read by someone with the product open, not by the person who wrote the code. Every
+sentence has to survive that reader. **No coding language in the plan body** — that means no
+field or column names, no HTTP status codes, no hook, class, repo, branch or PR names, no
+language trivia ("empty arrays are falsy"), no file paths.
+
+Those facts still matter — put them in a one-line **Reference** footer at the bottom, where
+someone chasing provenance can find them and a tester can ignore them.
+
+| Don't write | Write |
+|---|---|
+| "`teamOverrides` is a nullable `String`, max 255, no enum" | "you type the team name in by hand, so a typo saves fine and quietly matches nobody" |
+| "returns `422 UNPROCESSABLE_ENTITY`" | "red toast: *Couldn't save — these two settings can't both be on*" — quote the text the tester will actually see |
+| "evaluated in `useAccessConfigState`" | "on the details step, as the page loads" |
+| "backend PR merged to `develop`, frontend still open" | "the config half is already in, the screen half isn't yet" |
+
+Two tests for a finished plan: could a new joiner run it without opening the ticket, and does
+every expected result describe something **visible on screen**? If a step's expected result is a
+status code or a database state, it is an engineering check — label it as one or cut it.
 
 ## Quick start
 
@@ -71,15 +93,33 @@ How they connect (only when 2+ tickets are linked)
 So testing A end-to-end also proves B works. One test plan, N tickets.
 
 Setup: config states, health plans, test data, login persona.
+Include the click path to anything the tester has to configure, and a paste-ready block for
+any config they must apply. If different steps run at different times, say which run now.
 
 Steps to test tickets
-1. one action, one expected result, per line
+Every step answers three things: WHERE to go · WHAT to do · HOW IT SHOULD LOOK.
+"Verify it works" is not an expected result. Name what appears on screen, and quote the
+message text where there is one.
+
+1. one action, one visible result, per line
 ...
 End with a step that repeats the flow on the opposite/OFF condition, to confirm nothing else changed.
 
 Open questions
-1. anything unclear from Workflow step 5 — sharp and grounded, one per line.
+1. anything still unresolved after Workflow steps 5–6 — sharp and grounded, one per line.
+
+Reference
+ticket keys · config and field names · PRs · docs — one line, at the very bottom.
 ```
+
+**Render the steps as a table** (`# | Where to go | What to do | How it should look`) once the
+plan has more than one setup phase or more than about six steps, and group the rows into named
+parts — config side, the allowed path, the blocked path, edge cases, regression. Same three
+things either way; the table just stops the "where" and the "should look" from collapsing into
+one sentence. A short plan stays a numbered list.
+
+Where a failure would actually belong to a different ticket, say so in the expected result
+itself — a tester who files it in the wrong place loses a day to the bounce.
 
 If Divy hands you his own draft first, don't reproduce it as a separate "original draft" section
 — fold it straight into "What is X?" and "Steps to test," the same as if you'd derived it
@@ -138,25 +178,45 @@ Nothing is written back to the tracker until you say so.
    Traps* before turning anything you find into a flagged gap — a wrong catch is worse than no
    catch.
 
-6. **Find the consequence.** What does this data *do* downstream? A field that only renders is
+6. **Read the code that shipped, not just the ticket.** Find the PR — its description, its
+   changed-file list, and the diff of the file holding the new logic. This is the single highest
+   return step in the workflow and it belongs *before* you write any step, because the ticket is
+   a plan and the diff is what exists. It tells you: which surfaces changed that nobody
+   mentioned; what the devs already hit and fixed (their bug is your best test case); how edge
+   cases actually resolve; and which branch is still unmerged, so you know what can be tested
+   today. Details in PLAYBOOK §7. **Where the acceptance criteria and the merged code disagree,
+   the code is what ships** — test the code and raise the AC as a defect in the ticket, don't
+   write a step that asserts the AC.
+
+7. **Find the consequence.** What does this data *do* downstream? A field that only renders is
    low stakes. A field that decides money, routing, eligibility, or who gets notified is where
    the risk lives, and the journey must follow the value that far. Ask before writing a step.
 
-7. **Build the journeys** — patterns in PLAYBOOK. A and B always; C and D when they apply.
+8. **Build the journeys** — patterns in PLAYBOOK. A and B always; C and D when they apply.
 
-8. **Weight the edge cases.** Features rarely fail on the happy path. Use the generators in
+9. **Weight the edge cases.** Features rarely fail on the happy path. Use the generators in
    PLAYBOOK. This is where a plan earns its keep.
 
-9. **Draw the lanes.** Test what you are responsible for — the right data is captured, persists,
+10. **Ask whether the plan can pass for the wrong reason.** If the tester's account, client, or
+    config can't actually match the thing being gated, the "on" and "off" paths look identical
+    and a dead feature reads as a pass. Name that risk in one line at the top of the plan and
+    put confirming it in the setup, ahead of step one. Then search the tracker for open bugs on
+    the same screen — an in-flight bug that breaks the expected result of your negative test
+    will be filed against your ticket unless the plan says whose it is.
+
+11. **Draw the lanes.** Test what you are responsible for — the right data is captured, persists,
    flows downstream, and broke nothing. Not colours, not layout. State what the plan does *not*
    cover and why (buckets in PLAYBOOK); an honest exclusion beats a step nobody can run. Render
    the result in the **house format** by default — the full framework only when asked for it.
 
-10. **List what you had to ask** rather than assume — questions for engineering, questions for
-    product, at the bottom. Anything unclear from step 5 belongs here as a direct question, not
-    a guess folded quietly into a step.
+12. **List what you had to ask** rather than assume — questions for engineering, questions for
+    product, at the bottom. Anything still unresolved after steps 5–6 belongs here as a direct
+    question, not a guess folded quietly into a step. Address each one to a **named person**, and
+    delete the ones the diff already answered rather than asking a human to re-confirm code.
 
-11. **Score the plan before handing it over.** Four dimensions, 1–10 each, one line of reasoning:
+13. **Score the plan before handing it over** — for yourself, in the chat. The score is working
+    output, not part of the document; never paste it into the plan the tester reads. Four
+    dimensions, 1–10 each, one line of reasoning:
     - *Context Clarity* — could someone who missed the background follow the top section in one read?
     - *Assumption-Checking* — did you verify the approach against real docs, or just restate what you were told?
     - *Coverage* — does it include the real untested combination, or just the happy path someone already ran?
@@ -165,7 +225,10 @@ Nothing is written back to the tracker until you say so.
     A question that targets the wrong population, the wrong ticket, or an outdated doc does not
     count as a real catch under Assumption-Checking — say so instead of keeping the score.
 
-12. **→ Confirm before writing to the tracker.** Draft-only is the default.
+14. **→ Confirm before writing to the tracker.** Draft-only is the default. If the plan is going
+    into a Google Doc, markdown must be uploaded as markdown for the tables to convert — a
+    plain-text insert turns every table into pipe soup. That replaces the file's contents, so
+    fold anything worth keeping from the old version into the upload and say what you did.
 
 ## Never
 
@@ -175,7 +238,16 @@ Nothing is written back to the tracker until you say so.
 - Never write a step nobody can execute by clicking. If it needs a DB query or payload
   inspection, mark it an engineering check.
 - Never test what the ticket explicitly split out. Cite the ticket that owns it.
-- Never assume which fields or collections a change writes. Ask.
+- Never assume which fields or collections a change writes. Read the diff, then ask.
+- **Never treat a ticket's example values as real values.** Config samples in a ticket are
+  illustrative and are often subtly wrong — a missing underscore, a made-up group name. Find the
+  real list in a docs repo or from the person who owns provisioning, and say which source it came
+  from. Copying an example value into a setup block invents test data just as surely as inventing
+  an account ID.
+- **Never ask a human a question the diff already answers.** Every open question you can close by
+  reading code is one you're asking someone to re-confirm from memory, and it dilutes the ones
+  that genuinely need them.
+- Never put a field name, status code, or class name inside a step. Reference footer.
 
 ## If information is missing
 

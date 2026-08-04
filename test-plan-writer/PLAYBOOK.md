@@ -60,6 +60,11 @@ ones beat ten generic ones.
 | **Permissions** | Does every role that can reach this screen behave correctly? Can a role that should not see it get there? |
 | **Empty, loading, error** | No results, slow response, failed save. Easy to forget, cheap to test, common in production. |
 | **Duplicate and re-entry** | Submit twice, refresh mid-flow, use the back button. |
+| **The deleted key** | Something was *removed* from a config or payload rather than changed. Does the old value survive server-side? Many APIs only bind keys present in the request, so a deleted block silently persists and can trip validation that reads it. |
+| **The loading race** | The gate reads identity, permissions, or a remote config. What shows during the window before that resolves? A control that defaults to the wrong state for 200ms and then corrects is a real defect, and it's visible on a hard refresh. |
+| **The deliberately-unchanged sibling** | A code comment saying "this must stay independent of X" names a second control on the same screen that must *not* follow the new behaviour. Test that it didn't. |
+| **The pre-validator record** | A new constraint blocks bad data from now on. It does nothing about rows saved before it shipped. What does the new code do when it reads one? |
+| **Wrong case vs wrong spelling** | If matching is case-insensitive, these are two different tests with two different results. Wrong case should still match; a typo should silently match nothing — and if nothing validates the value, the config saves either way. |
 
 **Pick by consequence, not by count.** If the change decides money, routing, or who gets
 notified, spend the edge cases there. Note it explicitly when a generator does not apply — that
@@ -134,6 +139,9 @@ which is worse than not raising it at all.
 | **Stale doc, current ticket** | An old planning or review doc scored a *broader* initiative as risky or unready; the ticket in front of you may be a narrower, already-resolved slice of it. | Confirm the ticket's actual scope before importing an old doc's verdict wholesale. |
 | **Proxy field, not the real gate** | A manual test edits a field that happens to change the outcome, but isn't the field the code actually branches on. | Ask which field or flag the code checks — don't infer it from what worked once. |
 | **Confident tone, no source** | A question sounds sharp because it's specific, not because it's grounded in something real. | Every open question should point at a doc, a flag, or a line someone actually said — not a hunch dressed up as diligence. |
+| **AC as truth** | The acceptance criteria describe behaviour the merged code doesn't implement — often because someone edited one AC inline and left the bullets beneath it contradicting the edit. Writing a step that asserts the AC produces a "failure" that is really a doc bug. | The shipped code wins. Test what's built, and raise the AC mismatch as a defect on the ticket. |
+| **Example values as real values** | A config sample in a ticket gets copied into the setup block. The names look plausible and one of them is subtly wrong — a missing underscore, an invented group. | Find the real list in a docs repo or from whoever provisions it. Cite the source. Treat an unverified value as a placeholder. |
+| **The test that can't fail** | The account, client, or config used for testing can't match the thing being gated, so the on and off paths render identically and a dead feature reads as a pass. | Before step one, confirm the tester's identity actually falls inside the gate. Ask what a false pass would look like — if you can't tell it apart from a real one, the setup is wrong. |
 
 ### Self-update
 
@@ -143,7 +151,45 @@ somewhere private. The next ticket benefits, not just this one.
 
 ---
 
-## 7. Adapting this to your organisation
+## 7. Mining the diff
+
+The ticket is what someone intended. The diff is what exists. Read it before writing steps —
+it converts questions you were about to ask a human into facts, and it is usually the difference
+between a plan that restates the ticket and one that finds something.
+
+Find the PR from the ticket key. Read four things, in this order:
+
+| Read | What it gives you |
+|---|---|
+| **PR description** | The author's own before/after in prose, usually clearer than the ticket. Often states the resolution order and what was deliberately left alone. |
+| **Changed-file list** | Surfaces nobody mentioned. Two files where you expected one means two screens to test. Test files named after a component tell you what the author thought was risky. |
+| **The diff of the main logic file** | How edge cases actually resolve — the null branch, the fallback order, the guard clauses. |
+| **Code comments inside the diff** | The highest-value lines in the whole exercise. Authors explain the non-obvious right where they handled it. |
+
+What to extract:
+
+- **Bugs the devs already hit.** A defensive fix with a comment explaining why ("the backend only
+  binds keys present in the request, so a removed key leaves a stale value") is a defect that
+  reached someone's machine. It becomes a top-priority step, phrased as the user action that
+  triggered it — not as the code that fixes it.
+- **Which half is merged.** Backend and frontend often live in different repos on different
+  branches. If one is merged and one is open, the plan has two phases and must say which steps
+  run today. Check the merge target, not just the merged flag — a PR merged to `develop` won't
+  appear on `main`.
+- **Guard clauses that name a state you hadn't considered.** `if (user === undefined) return` is a
+  loading race. A normalising function is a case-sensitivity test. An early return is a fall-through
+  path that needs its own step.
+- **"Must stay independent of" comments.** These name a control that must *not* change. Test it.
+- **Real values.** An `example =` annotation or a test fixture carries values closer to reality
+  than a ticket's illustration — though still confirm the authoritative list elsewhere.
+- **How errors surface.** Whether a rejection lands as a red toast, an inline field error, or a
+  silent no-op is the expected result of your negative test. Quote the string the user sees, not
+  the status code.
+
+If there's no PR yet, say so — that's a finding, and it means the plan is written against intent
+and will need a pass once code exists.
+
+## 8. Adapting this to your organisation
 
 The method is portable; four inputs are local. Answer these once and reuse them.
 
