@@ -207,3 +207,68 @@ rediscover them.
 
 If a sibling skill already owns one of these inputs, call it rather than duplicating it — test
 data lookup, ticket authoring, and architecture grounding are commonly owned elsewhere.
+
+## 9. Sourcing test data
+
+§8 says never invent test data. This section is the method for actually getting it, and the
+failure modes that make a plan pass for the wrong reason.
+
+**The rule:** a plan names a real member, account, or record for every step that needs one, or it
+names the blank as an open question. There is no third option. An invented ID looks exactly like a
+real one, and the tester only finds out after the login screen.
+
+### The method
+
+1. **Find the authoritative sheet or fixture set, and say which tab.** A workbook usually has
+   several tabs holding different environments or vintages. Naming only the workbook sends the
+   tester to the wrong tab. Name the tab.
+2. **Look up by plan/tenant keyword, not by reading the whole sheet.** Large sheets truncate on
+   read, and a truncated read looks like a complete one. Use lookup formulas instead:
+   `=IFERROR(INDEX($<id_col>$2:$<id_col>,MATCH("*Keyword*",$<plan_col>$2:$<plan_col>,0)),"NO MATCH")`
+3. **Prefer a pre-bundled column if one exists.** Well-maintained sheets often have a single
+   column that concatenates everything needed to start a transaction. One lookup against that
+   column beats four against separate ones.
+4. **Count the matches, don't just take the first.** `COUNTIF` on the keyword. A count of 1 or 2
+   means your choice is forced and worth stating; a count of 60 means there is room to match the
+   line of business too.
+5. **Match the sub-dimension the gate actually reads.** If the feature is gated on line of
+   business, plan type, or product, the member must satisfy *that*, not just the tenant. This is
+   the single most common false pass — see the trap below.
+6. **Normalise the format to what the product expects.** Sheets store dates as ISO strings or as
+   serials (base `1899-12-30`); the UI usually wants locale format. Convert once, in the plan, so
+   the tester never does it. State both if there is any doubt.
+7. **Clean up after yourself.** If you added scratch formulas or a scratch tab to a shared
+   source-of-truth sheet, remove them and say you did. If the grid has no spare columns, use a
+   temporary tab rather than expanding the source data's grid.
+
+### Aliases and mis-hearings
+
+Verify the tenant name against the sheet before writing it into a plan. Names taken from a call
+transcript, a Slack thread, or memory are frequently wrong in ways that produce a confident
+`NO MATCH` later: a similar-sounding plan, an internal abbreviation, a former name. Search the
+distinct list first:
+`=TEXTJOIN(" ~ ",TRUE,UNIQUE(FILTER($A$2:$A,$A$2:$A<>"")))`
+
+If the name is not there, do not substitute the nearest-looking one silently — say what you
+searched for, what the real list contains, and which you used.
+
+### "There is no test member for X" ages badly
+
+Treat that claim as stale until you re-check. Sheets get backfilled. When a prior doc, comment, or
+teammate says data does not exist, re-run the lookup before repeating it — and if it now exists,
+say so explicitly, because someone is probably still blocked on the old answer.
+
+Also separate the two blockers that look identical from the outside: **no test member** and **the
+tenant not being configurable in that environment**. Finding a member does not fix the second one.
+If a plan was substituted on a call, work out which blocker caused it before undoing the
+substitution.
+
+### Traps
+
+| Trap | Why it passes for the wrong reason |
+|---|---|
+| Right tenant, wrong sub-dimension | A rule written for Commercial never matches a Medicare member, so a gated feature reads as correctly-off when it was never evaluated |
+| Automation-owned records | Records seeded by the E2E suite carry unusual state and get mutated mid-run. Exclude them by name and say why |
+| The only member is an edge case | Deliberately absurd fixtures (200-character names, far-future dates) exist for field-length tests. Fine for that; wrong as the default happy path |
+| One member for a multi-tenant matrix | If steps span tenants, each needs its own row. A single member silently collapses the matrix |
+| Format mismatch read as "not found" | An ISO date typed into a locale-format field fails lookup and looks like missing data |
