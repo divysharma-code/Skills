@@ -10,6 +10,8 @@ Every time this skill is updated, log the changes below with the date and a brie
 
 | Version | Date | Changes |
 |---------|------|---------|
+| **v2.6** | **2026-08-05** | **Applied to Cohere test-plan docs (internal technical writing).** +1 universal phrase-level marker: contraction-free register — writing "it is / does not / cannot" where a person would contract. Highest-signal tell in technical and internal writing specifically, where clean vocabulary means register is the only giveaway left; flag a 200+ word passage with zero contractions sitting next to human text that uses them. +1 universal structural marker: repeated list-item opener (every bullet starting with the same pseudo-label verb, e.g. four consecutive items opening "Proves ..."), extending the existing back-to-back-first-word rule into lists. Source: review of the call-update sections appended to test plans IPS-2629, IPS-2583 and IPS-2630. |
+| **v2.5** | **2026-07-20** | **Applied to Cohere Knowledgebase blog build.** +1 structural example under the honesty-disclaimer marker ("stated bluntly:", "put bluntly:", "in [X]-blunt terms" — candor announcements dropped before a plain claim; just state it). +1 universal structural marker: grandiose-importance closer ("Everything here is a footnote to that sentence.", "It all comes down to X.") — inflates the topic instead of ending on a real thought. Source: review of the Intake 101 KB post. |
 | **v2.4** | **2026-04-19** | **Weekly pattern refresh.** +1 universal phrase-level marker ("The truth is"). +3 LinkedIn phrase-level markers ("Read that again."/"Let that sink in.", "And honestly?"). +2 LinkedIn structural markers (achievement post formula, fake dialogue/conversation format). Sources: DEV community analysis of 500 AI LinkedIn posts, Medium LinkedIn AI crisis article, LinkedIn feed analysis (7+ posts from user's live feed), ContentBeta AI words list, Gerus detection tools article (arxiv markdown fingerprint paper). |
 | **v2.3** | **2026-04-12** | **Deep research refresh.** +4 AI vocabulary words (overall, absolutely, typically, various). +3 AI phrases (in summary, "Below is/Below:", "such as" overuse). +1 universal structural marker (reading complexity creep). +2 LinkedIn phrase-level markers ("What if I told you...", "Here's what nobody tells you..."). +1 LinkedIn structural marker (external link CTA). **New section added: Hook vs. Value Calibration** — framework for what writing gets algorithmic reach vs. what earns saves/dwell time/substantive comments after the click. Sources: SEJ AI fingerprints article (full read), Originality.AI LinkedIn AI study, AuthoredUp LinkedIn algorithm data, Dataslayer 2026 algorithm analysis, LinkedIn dwell time research. |
 | **v2.2** | **2026-04-12** | **Weekly pattern refresh.** +4 LinkedIn-specific markers: ALL-CAPS single-word injection (phrase-level), information-withheld hook (structural), "X is [positive]. [X variant] is a whole different game" contrast formula (structural), cliché proverb opener (structural). Sources: LinkedIn feed analysis (15+ posts from user's live feed) + web research (AI writing fingerprints, LLM detection trends 2026). |
@@ -147,6 +149,7 @@ Scan the content for AI markers at two levels. Apply universal markers to ALL co
 - Filler openers: "In today's [noun]", "When it comes to", "At the end of the day", "The truth is" (front-loads candor before a generic claim — e.g. "The truth is, most managers don't know how to have hard conversations" — just state the claim; distinct from "And I'll be honest:" which is a mid-sentence pivot)
 - Product-tagline phrasing in non-product contexts: compact phrases that read like feature copy instead of a person talking (e.g. "Hands-free until review", "Built for scale")
 - Runway sentences: vague hype lines before the actual specific detail. Cut the runway, start with the substance.
+- Contraction-free register: writing out "it is", "does not", "do not", "cannot", "is not", "will not" where a person would contract. This is one of the highest-signal tells in *technical and internal* writing, where the vocabulary is already clean so register is the only thing left to give it away. Example: "It is not your setup, and the step does not need re-running" vs "It isn't your setup, and the step doesn't need re-running." Flag when a passage of 200+ words contains zero contractions while the surrounding human-written text uses them. Match the register of the document you are writing into, not a formal default.
 
 ---
 
@@ -169,15 +172,17 @@ Scan the content for AI markers at two levels. Apply universal markers to ALL co
 - Declarative reveal pattern: "The skill that will separate...? It's critical thinking." Just state the claim directly.
 - Label-colon framework: packaging observations into named label: description pairs to simulate a framework. Unless documenting a real methodology, write in prose.
 - Stat bomb opener: rapid-fire sequence of 3+ short statistical fragments. Weave stats into real sentences.
-- Honesty disclaimer: "And I'll be honest:", "I'll be real:" — just state the opinion directly.
+- Honesty disclaimer: "And I'll be honest:", "I'll be real:", "stated bluntly:", "put bluntly:", "in [X]-blunt terms" — candor announcements dropped before a plain claim. Just state the opinion directly.
 - Credential stacking opener: stacking 2-3 credential statements before giving advice. Weave credentials into the argument or skip them.
 - Definition reframe: redefining a problem in a pithy formula (e.g. "It's an execution problem dressed up as a leadership problem."). State the observation without clever packaging.
 - Punchy orphan closer: ending with a standalone short sentence as a mic-drop. Close with a real thought or fold it into the final paragraph.
+- Grandiose-importance closer: ending by inflating the topic's stakes instead of on a real thought (e.g. "Everything here is a footnote to that sentence.", "It all comes down to this.", "That's the whole game."). Cut the inflation or replace with a concrete implication the reader can act on.
 - Tension-colon opener: opening with a colon-separated tension statement. Just state the observation.
 - Parenthetical aside for fake candor: multiple parenthetical asides to simulate conversational tone. One is fine. Multiple signal performative writing.
 - Standalone hype fragment: "This is big." or "Game changer." Cut or replace with a specific claim.
 - Triple rhetorical question hook: opening with 2-3 rapid rhetorical questions to manufacture intrigue. Rewrite as a direct opening or specific story.
 - Reading complexity creep: AI clusters multi-syllable vocabulary and nested dependent clauses that push reading level above 10th grade. LinkedIn's algorithm penalizes above-10th-grade text with ~35% less reach. Flag: three or more 3-syllable words in the same sentence, or sentences with 2+ embedded dependent clauses. Rewrite with shorter words, shorter sentences. Aim for a 7th–9th grade reading level in conversational professional content.
+- Repeated list-item opener: every item in a list starting with the same word, most often a verb used as a pseudo-label. Example: "Proves team-level allow. / Proves team-level block. / Proves the old rules still work. / Proves the no-override fallback." Reads as generated-from-template. The universal "no back-to-back sentences starting with the same first word" rule applies inside lists too — vary the openers, or drop the verb and let each item name the thing directly.
 
 ---
 
@@ -445,10 +450,10 @@ Present the rewrite as the final output after the review report.
 ## What This Catches (Reference)
 
 **Phrase-level AI markers (universal):**
-Overused transitions, hollow intensifiers, AI vocabulary (35+ words), AI phrasing & metaphors (16+ phrases), stacked abstract noun lists, passive voice, hedge phrases, filler openers, product-tagline phrasing, runway sentences
+Overused transitions, hollow intensifiers, AI vocabulary (35+ words), AI phrasing & metaphors (16+ phrases), stacked abstract noun lists, passive voice, hedge phrases, filler openers, product-tagline phrasing, runway sentences, contraction-free register
 
 **Structural AI markers (universal):**
-Generic openings, bullet-point overuse, template structures, summary closings, uniform paragraph length, stacked fragments, negation constructions, honesty disclaimers, credential stacking, definition reframes, punchy orphan closers, tension-colon openers, stat bomb openers, self-posed questions, declarative reveals, label-colon frameworks, triple rhetorical questions, adverb-stacking pivots, standalone hype fragments
+Generic openings, bullet-point overuse, template structures, summary closings, uniform paragraph length, stacked fragments, negation constructions, honesty disclaimers, credential stacking, definition reframes, punchy orphan closers, grandiose-importance closers, tension-colon openers, stat bomb openers, self-posed questions, declarative reveals, label-colon frameworks, triple rhetorical questions, adverb-stacking pivots, standalone hype fragments, repeated list-item openers
 
 **Channel-specific markers:**
 LinkedIn: pivot transitions, engagement bait, vulnerability performance, fake humility, tag-and-thank, one-line paragraphs, vulnerability bait hooks, negation upgrades, hyperbole openers, arrow chains
@@ -509,3 +514,14 @@ Compare the flags you raised in this review against the detection lists already 
 ```
 
 If no new patterns were found, check the box for "no new patterns" instead. Do not add patterns that are vague or that you cannot illustrate with a concrete example from the content you just reviewed.
+
+---
+
+## Cohere Knowledgebase note (project-specific)
+
+When humanizing posts for the Cohere Knowledgebase (`~/code/cohere-knowledgebase/src/content/*.md`), the author is Divy Sharma. His documented voice **overrides** two universal defaults:
+
+- **Keep the tables, bullets, and tiny sections.** The "bullet-point overuse / prose carries more weight" structural marker does NOT apply — heavy tables + bullets + short sections are his deliberate, stated preference (he pushed back on dense prose three times). Fix sentence-level AI texture inside the bullets; do not convert them to prose.
+- **Keep the ELI5 + analogy opening and the ==highlight== marks.** These are house style, not AI tells.
+
+Everything else (no em dashes, no arrow-chains in prose, no candor announcements, no grandiose closers, be specific) applies fully.
