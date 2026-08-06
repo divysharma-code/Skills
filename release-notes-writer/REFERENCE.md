@@ -33,6 +33,21 @@ than something with new UI to walk through.
 
 [Rollout cohorts/dates if phased.]
 
+## Anticipated questions
+
+* **[Question a reader will actually ask].** [Direct answer. If it's genuinely
+  open rather than answered, say that instead of guessing.]
+* ...
+
+## Contributors
+
+**Delivery team**
+* [Name] — [role: Product/Engineering/etc.]
+
+**Also had a hand in this**
+* [Name] — [team, if not core delivery] — [what they did: reviewed, flagged
+  a scoping call, consulted on precedent, etc.]
+
 ## Reference
 
 [Ticket keys, config names — kept out of the prose above.]
@@ -61,6 +76,37 @@ talking points for reps, kept separate from the client-facing content above it.
 Worth including whenever the note's real audience (Ops/CX) needs to relay this
 to someone else (a client) and would benefit from framing guidance.
 
+**Worked example of the two added sections** (from the Census intake channel
+note, IPS-2583):
+
+Anticipated questions:
+* **Does this apply to any client besides HMSA?** No — it's config-gated, and
+  only HMSA has it turned on.
+* **Does this change how TAT is calculated?** No — identical to Portal, only
+  the channel label differs.
+* **Will clients see new letters for Census requests?** No — it inherits
+  standard Portal notification config; no channel-specific letters were
+  built (that was explicitly out of scope for HMSA).
+* **What if another client wants this later?** Open — turning the config on
+  for a different plan would still need someone from Review/Letters to
+  confirm they don't need channel-specific notification logic the way HMSA
+  didn't. Not answered by this ticket.
+
+Contributors:
+
+**Delivery team**
+* Paridhi Jain — Product (drove the ticket, flagged the notification-scope
+  question to Review)
+* Chaitanya Gopireddy — Engineering (schema, backend, and frontend changes)
+
+**Also had a hand in this**
+* Carrie Watson — Review team, confirmed HMSA doesn't need channel-specific
+  letter logic for Census, which is why notifications stayed out of scope
+* Vidhi Kakani — consulted on precedent from the WISeR project's handling of
+  a similar channel/TAT question
+* Code review across the three linked PRs: Rafael Zanetti, Anthony Vargas,
+  Abhinav Dhara, Sai Teja Pulugurtha
+
 ## Format B — new feature/UI change
 
 Mirrors the live Confluence page "Release | Expandable Cards for Appeal
@@ -88,6 +134,19 @@ what it lets the reader do that they couldn't before.]
 | --- | --- |
 | [Step 1] | [screenshot] |
 | [Step 2] | [screenshot] |
+
+## Anticipated questions
+
+* **[Question a reader will actually ask].** [Direct answer, or "open" if
+  genuinely unresolved.]
+
+## Contributors
+
+**Delivery team**
+* [Name] — [role]
+
+**Also had a hand in this**
+* [Name] — [team, if not core delivery] — [what they did]
 
 # Helpful links
 

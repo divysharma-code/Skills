@@ -31,6 +31,28 @@ people "don't like scrolling." See `REFERENCE.md` for the actual quotes — rere
 them before drafting, because they show the real complaint was never "too much
 personality," it was length and scannability.
 
+## Two more sections every note carries
+
+Beyond the four questions, every note ends with these two — not optional
+extras, part of the default shape:
+
+- **Anticipated questions.** A short Q&A block that gets ahead of what a
+  reader will ask five minutes after this ships — client scope ("does this
+  apply to us?"), whether it's actually live yet, whether TAT/notifications
+  really changed. Pull the questions from what's actually ambiguous in the
+  source (a caveat in the config doc, a scoping note in the ticket), not
+  generic filler. If something's a genuine open question rather than an
+  answer you have, say that — don't invent an answer to look complete.
+- **Contributors.** Name everyone who touched the work, not just whoever's
+  listed as assignee/PO on the ticket. Pull from the Jira comment trail
+  *and* the linked PR(s) — author plus reviewers — and call out anyone
+  outside the core delivery pod by name (a reviewer on another team, someone
+  from Review/Letters who signed off on a scoping decision, a person
+  consulted for precedent from a related project). Don't fold everyone into
+  a generic "the team" — that's exactly the credit non-PDDE contributors
+  usually don't get. If a name's role or team affiliation isn't clear from
+  the source, say so rather than guessing at it.
+
 ## Audience — this skill defaults to internal (Ops/PlatCon/CX)
 
 Not client-facing. That means:
@@ -51,10 +73,12 @@ full, with worked examples, in `REFERENCE.md`):
 
 - **Format A — config/behavior change**: Purpose line → summary table
   (Update / Type / Availability / Who it affects) → what's changing (bullets)
-  → what the reader will notice → action required → timing → reference footer.
+  → what the reader will notice → action required → timing → anticipated
+  questions → contributors → reference footer.
 - **Format B — new feature/UI change**: one-line narrative opener → summary
   table (Status / Feature / Launch date / User group) → what's new → how to
-  use it (numbered steps) → reference footer.
+  use it (numbered steps) → anticipated questions → contributors → reference
+  footer.
 
 ## Workflow
 
@@ -66,11 +90,15 @@ full, with worked examples, in `REFERENCE.md`):
    - Confluence link given → pull it via `getConfluencePage` and translate its
      config-field language into what the reader actually manages — never
      leave a raw field name like `enableManuallyCreatedProviders` in the note.
+   - Also pull the linked PR(s) off the ticket (schema/BE/FE, whatever's
+     linked) — author and reviewers. This is where non-PDDE contributors
+     usually surface that the Jira comment trail alone won't show.
 2. **Pick the format** (A or B) and confirm the register is internal
    (Ops/PlatCon/CX) unless told otherwise.
-3. **Draft**, answering the four questions explicitly. Short paragraphs,
-   generous line breaks — that's the fix for "don't like scrolling," not
-   removing personality.
+3. **Draft**, answering the four questions explicitly, plus the anticipated
+   questions and contributors sections. Short paragraphs, generous line
+   breaks — that's the fix for "don't like scrolling," not removing
+   personality.
 4. **Read it back once as a leak check**: would this embarrass anyone if a
    client saw it forwarded? This is where a placeholder or venting line
    ("TBD — a shit tonne of config changes") gets caught before it ships.
@@ -86,6 +114,10 @@ full, with worked examples, in `REFERENCE.md`):
 - Config-doc language leaking through untranslated.
 - One note trying to serve both an internal and a client-facing audience.
 - Inventing a "why" when the source doesn't give one — ask instead.
+- Crediting only the PO/assignee on the ticket and calling it "the team" —
+  check the linked PR(s) for who actually reviewed and shipped it.
+- Anticipated questions that restate the summary table instead of surfacing
+  the thing a reader would actually push back on.
 
 See [REFERENCE.md](REFERENCE.md) for the two full format templates with worked
 examples, the real Cohere retro feedback on its release notes channel, and the
