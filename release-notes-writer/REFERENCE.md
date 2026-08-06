@@ -155,6 +155,91 @@ what it lets the reader do that they couldn't before.]
 * Feature flag: [if applicable]
 ```
 
+## Format C — batch/multi-workstream rollup
+
+For a Slack-native running update that bundles several distinct pieces of
+work — different teams, shipped across weeks or months — into one post.
+Not a fancier version of Format A/B; use this only when the source really is
+a batch, not a single change.
+
+```
+[Opening hook — 1 short paragraph. Name the product, credit the teams
+broadly, lead with a headline metric or proof point (satisfaction score,
+time saved, adoption number). Celebratory tone is fine, but the metric has
+to be real, not filler.]
+
+:done: **[Outcome headline, not the internal project name]**
+[1-3 sentences: what changed AND why it matters to the reader — don't stop
+at the headline.]
+Huge S/O: @[everyone who touched this specific workstream]
+
+:work_in_progress: **[Outcome headline]**
+[Same shape — what's happening, why it matters, current state.]
+Huge S/O: @[names]
+
+:soon: **[Outcome headline], available [date]**
+[Same shape, framed as upcoming — give the actual date if you have one.]
+Huge S/O: @[names]
+
+[Closing capstone line — one stat that ties the whole batch together, e.g.
+zero defects, an aggregate time-savings number.]
+
+Finally, huge shoutout to [leadership/design/technical leads] whose
+[design/technical] leadership force-multiplied all of the above.
+```
+
+Two things this format does differently from A/B:
+
+- **Status lives per item, not in one table.** `:done:` / `:work_in_progress:`
+  / `:soon:` (with a date) replaces the Availability column — appropriate
+  when a single post covers items at genuinely different rollout stages.
+- **Credit lives per item, not in one end-of-note Contributors section.**
+  Each workstream gets its own "Huge S/O" line naming everyone who touched
+  *that* piece — including reviewers, ops partners, anyone outside the core
+  team. Same non-PDDE-inclusive principle as Format A/B's Contributors
+  section, just distributed instead of centralized, because a batch this
+  size will have a different contributor list per item.
+
+**Worked example** (a real internal rollup, "Casey" AI assistant — condensed):
+
+> Hi team - we're ready to announce the latest generation of Casey 🤖🤖🤖. Our
+> stellar AI teams, in partnership with our amazing operations teams, have
+> made huge leaps in Casey over the past couple of months - and the results
+> are showing - user satisfaction has grown each survey, now at about 70% for
+> internal and external reviewers! We're also seeing time savings and quality
+> outcomes for ourselves and our paas clients 🚀
+
+:done: **50% fewer inaccurate answers, rolled out in early May** — Casey's
+underlying intelligence got an accuracy upgrade, with no change to response
+time. Also just rolled out: better retrieval of information hidden deep
+inside tables.
+Huge S/O: @Ifeanyi Osuchukwu @Boris Kundu @Will Mau @Hannah Catri @Weiru Chen
+@Komal Bodhankar @Leo Mena @Reda Dani @Apurva Tawde @David Coar
+
+:work_in_progress: **Over 100 case-aware review note summary buttons** — case
+-specific summary buttons for every delegated clinical area, a dozen already
+live, plus a generic review note skill for GHP. Also rearchitected skill
+management to make deployment safer.
+Huge S/O: @Ciera Von Wolfe @Tomas Rodriguez @Will Mau
+
+:soon: **Claims history as context, available for preprod testing August 14**
+— Casey will read a member's claims history when answering questions,
+drawing on the Claims History tab going back months.
+Huge S/O: @Boris Kundu @Reda Dani @Bri Oribello
+
+Maybe best of all - all of this amazing velocity has come with zero reported
+client defects 🚀
+
+Finally huge shoutout to @Melanie Martin, @Laura Wenderoth, @Bri Oribello,
+@Betsy Kalven, @J.D. Martindale, @Kenji, @sujata.patil, and @Sridhar Guntoju,
+whose design and technical leadership force-multiplied all of the above.
+
+What to notice in this example: the per-item explanation is sometimes *only*
+a "what" ("50% fewer inaccurate answers") without a full "why it matters to
+you" sentence — that's the one place to go a little more detailed than the
+raw source, per item, rather than copying the terseness along with the style.
+The status emoji and the S/O line are worth keeping as-is.
+
 ## Real feedback on record — read this before drafting
 
 From the Confluence page "2025 Release Notes - ARCHIVE," a retro on Cohere's

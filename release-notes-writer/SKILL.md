@@ -66,10 +66,10 @@ Not client-facing. That means:
   required" framing dominant) — write it as a separate note, don't try to
   serve both audiences in one draft.
 
-## Pick one house format — don't invent a third
+## Pick one house format — don't invent a fourth
 
-Cohere already has two live formats in Confluence. Use whichever fits (both in
-full, with worked examples, in `REFERENCE.md`):
+Cohere has three live formats. Use whichever fits (all three in full, with
+worked examples, in `REFERENCE.md`):
 
 - **Format A — config/behavior change**: Purpose line → summary table
   (Update / Type / Availability / Who it affects) → what's changing (bullets)
@@ -79,6 +79,14 @@ full, with worked examples, in `REFERENCE.md`):
   table (Status / Feature / Launch date / User group) → what's new → how to
   use it (numbered steps) → anticipated questions → contributors → reference
   footer.
+- **Format C — batch/multi-workstream rollup**: for when several distinct
+  things shipped over weeks/months and get bundled into one running update
+  (Slack-native, not a Confluence page). Opening hook paragraph with a
+  headline metric → one entry per workstream (status emoji + bolded outcome
+  headline + short why-it-matters paragraph + inline per-item shoutout) →
+  closing capstone stat → separate leadership/design shoutout. Credit lives
+  per-item here instead of in one end-of-note Contributors section — see
+  REFERENCE.md for why and for the worked example (the Casey AI rollup).
 
 ## Workflow
 
@@ -93,12 +101,18 @@ full, with worked examples, in `REFERENCE.md`):
    - Also pull the linked PR(s) off the ticket (schema/BE/FE, whatever's
      linked) — author and reviewers. This is where non-PDDE contributors
      usually surface that the Jira comment trail alone won't show.
-2. **Pick the format** (A or B) and confirm the register is internal
-   (Ops/PlatCon/CX) unless told otherwise.
+2. **Pick the format** (A, B, or C) and confirm the register is internal
+   (Ops/PlatCon/CX) unless told otherwise. Reach for C only when the source
+   is genuinely a multi-workstream batch (several separate pieces of work,
+   different teams, shipped over a period) — not a fancier way to write a
+   single-change note; that's still A or B.
 3. **Draft**, answering the four questions explicitly, plus the anticipated
-   questions and contributors sections. Short paragraphs, generous line
-   breaks — that's the fix for "don't like scrolling," not removing
-   personality.
+   questions and contributors sections (or, in Format C, the per-item
+   shoutouts). Short paragraphs, generous line breaks — that's the fix for
+   "don't like scrolling," not removing personality. In Format C especially,
+   don't let the punchy one-liner replace the why — a status emoji and a
+   bolded headline are not a substitute for the sentence that says what it
+   actually means for the reader. Slightly fuller beats too terse here.
 4. **Read it back once as a leak check**: would this embarrass anyone if a
    client saw it forwarded? This is where a placeholder or venting line
    ("TBD — a shit tonne of config changes") gets caught before it ships.
@@ -118,8 +132,13 @@ full, with worked examples, in `REFERENCE.md`):
   check the linked PR(s) for who actually reviewed and shipped it.
 - Anticipated questions that restate the summary table instead of surfacing
   the thing a reader would actually push back on.
+- Format C used just to look punchier for a single-item note — it's for
+  genuine multi-workstream batches, not a style upgrade.
+- Per-item shoutouts in Format C that are so terse the "why it matters"
+  disappears — a one-line headline plus a name list isn't a release note.
 
-See [REFERENCE.md](REFERENCE.md) for the two full format templates with worked
-examples, the real Cohere retro feedback on its release notes channel, and the
-existing Jira-driven pipeline (`release notes required?` field + `Planned
-Release Date`) that already feeds weekly Intake & Review release notes.
+See [REFERENCE.md](REFERENCE.md) for the three full format templates with
+worked examples, the real Cohere retro feedback on its release notes channel,
+and the existing Jira-driven pipeline (`release notes required?` field +
+`Planned Release Date`) that already feeds weekly Intake & Review release
+notes.
