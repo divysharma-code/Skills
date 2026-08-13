@@ -1,6 +1,20 @@
 ---
 name: release-notes-writer
 description: Write Cohere release notes for Ops, PlatCon, and CX/Client Services readers — internal, non-engineering — from a Jira ticket, a Confluence config-doc page, or a rough bullet list of what shipped. Turns a technical config/feature change into a note that answers what changed, why, how it affects the reader's day-to-day, and what they need to do differently; personality/human tone is welcome since the audience is internal, but never at the cost of clarity or burying the actual change. Use when Divy asks to write, draft, or publish release notes, a "what shipped" update, a change announcement for Ops/CX/PlatCon, or wants to turn a ticket or config doc into a release note.
+version: 1.1.0
+author: Divy Sharma
+license: MIT
+metadata:
+  optional: ["Atlassian MCP (to pull the driving Jira ticket and linked PRs)", "the-humanizer skill (required final workflow step, see Workflow; if not installed, apply its em-dash and AI-pattern rules manually instead of skipping the check)"]
+---
+
+## Changelog
+
+| Version | Date | Changes |
+|---|---|---|
+| **v1.1.0** | **2026-08-13** | **Added Format D (product narrative) + made the-humanizer pass mandatory.** New default format: Overview / Why We Built This / Impact and Outcome / Why does it matter? / How does it work? / Where can I learn more? / Who is the user? Use it when Divy wants a note that teaches the feature's story instead of Format A's terser config-change table. Source: three iterations on a Faxback Reasons release note. v1 in Format A read as "worse formatted" than a comparable ELI5 explainer doc; v3 in this new shape was the one Divy actually wanted. Also added a required final workflow step: run the-humanizer on every draft, in every format, before presenting it. A manual review missed 7 em dashes in the v3 draft despite that being one of the-humanizer's simplest, most deterministic rules, so the check is now explicit and ordered: grep for em dashes first, then run the rest of the pattern scan. |
+| v1.0.0 | n/a | Initial skill: Formats A (config/behavior change), B (new feature/UI change), C (batch/multi-workstream rollup). |
+
 ---
 
 # Release Notes Writer
@@ -66,10 +80,10 @@ Not client-facing. That means:
   required" framing dominant) — write it as a separate note, don't try to
   serve both audiences in one draft.
 
-## Pick one house format — don't invent a fourth
+## Pick a house format — don't invent a fifth
 
-Cohere has three live formats. Use whichever fits (all three in full, with
-worked examples, in `REFERENCE.md`):
+Four live formats. Use whichever fits (all four in full, with worked examples,
+in `REFERENCE.md`):
 
 - **Format A — config/behavior change**: Purpose line → summary table
   (Update / Type / Availability / Who it affects) → what's changing (bullets)
@@ -87,6 +101,14 @@ worked examples, in `REFERENCE.md`):
   closing capstone stat → separate leadership/design shoutout. Credit lives
   per-item here instead of in one end-of-note Contributors section — see
   REFERENCE.md for why and for the worked example (the Casey AI rollup).
+- **Format D — product narrative (default for Divy)**: Overview → Why We Built
+  This → Impact and Outcome → Why does it matter? → How does it work? → Where
+  can I learn more? → Who is the user? Best fit when the note's job is teaching
+  the feature's story, not just flagging a config change. Prose paragraphs and
+  tables replace Format A's terser summary-table shape, and timing/contributors
+  drop from headline sections to a quiet footnote when the source doc doesn't
+  cite a ticket. Default to this format unless Divy asks for a Confluence
+  house-style page (A/B) or a Slack batch update (C).
 
 ## Workflow
 
@@ -101,22 +123,34 @@ worked examples, in `REFERENCE.md`):
    - Also pull the linked PR(s) off the ticket (schema/BE/FE, whatever's
      linked) — author and reviewers. This is where non-PDDE contributors
      usually surface that the Jira comment trail alone won't show.
-2. **Pick the format** (A, B, or C) and confirm the register is internal
-   (Ops/PlatCon/CX) unless told otherwise. Reach for C only when the source
-   is genuinely a multi-workstream batch (several separate pieces of work,
-   different teams, shipped over a period) — not a fancier way to write a
-   single-change note; that's still A or B.
+2. **Pick the format** (D by default; A, B, or C when it fits better) and
+   confirm the register is internal (Ops/PlatCon/CX) unless told otherwise.
+   Reach for C only when the source is genuinely a multi-workstream batch
+   (several separate pieces of work, different teams, shipped over a period)
+   — not a fancier way to write a single-change note; that's still A, B, or D.
 3. **Draft**, answering the four questions explicitly, plus the anticipated
-   questions and contributors sections (or, in Format C, the per-item
-   shoutouts). Short paragraphs, generous line breaks — that's the fix for
-   "don't like scrolling," not removing personality. In Format C especially,
-   don't let the punchy one-liner replace the why — a status emoji and a
-   bolded headline are not a substitute for the sentence that says what it
-   actually means for the reader. Slightly fuller beats too terse here.
-4. **Read it back once as a leak check**: would this embarrass anyone if a
+   questions and contributors sections (Format D folds these into "Impact and
+   Outcome" and a "Where can I learn more?" footnote; Format C uses per-item
+   shoutouts instead). Short paragraphs, generous line breaks — that's the fix
+   for "don't like scrolling," not removing personality. In Format C
+   especially, don't let the punchy one-liner replace the why — a status
+   emoji and a bolded headline are not a substitute for the sentence that
+   says what it actually means for the reader. Slightly fuller beats too
+   terse here.
+4. **Run the-humanizer on the full draft. Every format, every time — not
+   optional.** Start with an explicit search for em dashes (the single
+   easiest rule to miss on a manual pass) and fix every hit with a comma,
+   period, or colon before moving on to the rest of the pattern scan
+   (AI vocabulary, label-colon frameworks, contraction-free register, hedge
+   phrases). This doc is internal/technical writing, not blog or LinkedIn
+   content, so skip the hook/mic-drop/engagement-bait checks and calibrate
+   the way the-humanizer's own test-plan-docs precedent does. Apply the fixes
+   inline before moving to the next step — don't hand back a flagged list
+   without the corresponding rewrite.
+5. **Read it back once as a leak check**: would this embarrass anyone if a
    client saw it forwarded? This is where a placeholder or venting line
    ("TBD — a shit tonne of config changes") gets caught before it ships.
-5. **Ask before publishing anywhere** — this skill drafts. Whether it lands in
+6. **Ask before publishing anywhere** — this skill drafts. Whether it lands in
    a Confluence page, gets pasted into Slack, or stays as a doc is Divy's call
    each time, not a default.
 

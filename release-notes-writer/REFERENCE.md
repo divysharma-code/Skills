@@ -240,6 +240,87 @@ you" sentence — that's the one place to go a little more detailed than the
 raw source, per item, rather than copying the terseness along with the style.
 The status emoji and the S/O line are worth keeping as-is.
 
+## Format D — product narrative (default for Divy)
+
+Not tied to any live Confluence page — this is Divy's own preferred shape,
+arrived at after comparing a Format A draft against an ELI5 explainer doc he
+judged better-written for the same kind of feature. Best fit for a config or
+feature change where the reader benefits from understanding the "why," not
+just "what changed."
+
+```
+# [Feature name]
+
+## Overview
+[1-3 sentences: what this is and what changed, in plain terms a first-time
+reader can follow without already knowing the feature.]
+
+## Why We Built This
+[The real constraint or scaling problem that made the old approach stop
+working — not "improves configurability." If the source doesn't say why,
+ask rather than inventing a plausible-sounding rationale, same as Format A.]
+
+## Impact and Outcome
+* [Concrete, sourced outcome.]
+* [Concrete, sourced outcome.]
+* [Concrete, sourced outcome.]
+[If a real rollout number or adoption metric isn't in the source, say so as
+a footnote instead of inventing one — an honest gap beats a fabricated stat.]
+
+## Why does it matter?
+[1-3 sentences of connected prose, one clause per affected group. Do NOT
+write this as a label-colon list ("For agents: ... For providers: ...") —
+that's a flagged AI pattern (see the-humanizer). Weave it into a real
+paragraph instead.]
+
+## How does it work?
+[A Piece | What it does table, or short bullets, naming the actual
+mechanism — config fields, categories, fallback behavior. Keep field names
+here, not in the prose above.]
+
+## Where can I learn more?
+[Source doc/page, config path. If the source doesn't cite a ticket or PR,
+say so as a quiet footnote rather than guessing at timing or credit.]
+
+## Who is the user?
+| Role | How they use it |
+|---|---|
+[one row per persona]
+```
+
+**Worked example** (Faxback Reasons, condensed — the draft that established
+this format, 2026-08-13):
+
+> ## Overview
+> Faxback Reasons replaces free-text faxback handling with a categorized,
+> searchable dropdown. When a fax intake agent needs to send a fax back to a
+> provider, usually because something's missing or the case is out of scope,
+> they now pick a preset reason instead of typing one from scratch.
+>
+> ## Why We Built This
+> Before this, every payer either shared one hardcoded list of fax reasons or
+> had custom logic hand-coded per payer by engineering. As more payers joined
+> the Cohere environment, each needing its own specific set of reasons, that
+> stopped scaling: a new client with different reasons meant another
+> engineering ticket.
+
+Full draft (all seven sections, with the how-it-works table and who's-the-user
+table) lives in the chat history that produced it — this excerpt is here to
+show register and section length, not to be copied verbatim.
+
+Two things this format does differently from A/B:
+
+- **No headline Availability/Timing or Contributors sections.** When the
+  source doc doesn't cite a shipping ticket or PR (common — check whether
+  neighboring sections on the same config page cite one before assuming this
+  one should), that information drops to a one-line italic footnote under
+  "Where can I learn more?" instead of an empty or "TBD" section header. A
+  missing section reads as unfinished; a quiet footnote doesn't.
+- **"Why does it matter?" is prose, not a table or a label-colon list.** The
+  temptation is to write "For agents: X. For providers: Y. For health plans:
+  Z." — resist it. That's a flagged AI pattern (label-colon framework). Weave
+  the same three points into one real paragraph instead.
+
 ## Real feedback on record — read this before drafting
 
 From the Confluence page "2025 Release Notes - ARCHIVE," a retro on Cohere's
