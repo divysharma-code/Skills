@@ -18,6 +18,10 @@ Markdown-to-ADF support is deliberately narrow — just what a sign-off needs:
   - "**bold**", `inline code`, and > blockquote lines
   - GitHub-style pipe tables (header row + --- separator row)
   - Plain paragraphs, separated by blank lines
+  - "@[Name]" anywhere in the body -> a real Jira mention inline (not just in
+    --cc), e.g. "Sai Teja clarified: @[saiteja.pulugurtha] confirmed the API
+    already supports this." Resolved the same way as --cc names: refuses to
+    post if the name is ambiguous.
 
 Credentials are read from ~/.config/jira/credentials.env:
   JIRA_EMAIL, JIRA_API_TOKEN, JIRA_BASE_URL
@@ -115,6 +119,18 @@ def resolve_names(creds, names):
 # Markdown -> ADF (narrow, sign-off-shaped)
 # ---------------------------------------------------------------------------
 
+INLINE_MENTION_PATTERN = re.compile(r"@\[([^\]]+)\]")
+
+
+def find_inline_mention_names(md_text):
+    """Every distinct name inside an @[Name] token in the body."""
+    seen = []
+    for name in INLINE_MENTION_PATTERN.findall(md_text):
+        if name not in seen:
+            seen.append(name)
+    return seen
+
+
 def text_node(t, marks=None):
     node = {"type": "text", "text": t}
     if marks:
@@ -122,10 +138,11 @@ def text_node(t, marks=None):
     return node
 
 
-def parse_inline(line):
-    """Split a line into ADF text nodes, handling **bold** and `code`."""
+def parse_inline(line, mention_lookup=None):
+    """Split a line into ADF text nodes: **bold**, `code`, and @[Name] mentions."""
+    mention_lookup = mention_lookup or {}
     nodes = []
-    pattern = re.compile(r"(\*\*[^*]+\*\*|`[^`]+`)")
+    pattern = re.compile(r"(\*\*[^*]+\*\*|`[^`]+`|@\[[^\]]+\])")
     parts = pattern.split(line)
     for part in parts:
         if not part:
@@ -134,18 +151,28 @@ def parse_inline(line):
             nodes.append(text_node(part[2:-2], [{"type": "strong"}]))
         elif part.startswith("`") and part.endswith("`"):
             nodes.append(text_node(part[1:-1], [{"type": "code"}]))
+        elif part.startswith("@[") and part.endswith("]"):
+            name = part[2:-1]
+            m = mention_lookup.get(name)
+            if m:
+                nodes.append({"type": "mention", "attrs": {"id": m["accountId"], "text": "@" + m["displayName"]}})
+            else:
+                # Resolution failed upstream in cmd_post's fail-fast check; this
+                # branch should be unreachable in practice, but fall back to
+                # plain text rather than crashing if it's ever hit.
+                nodes.append(text_node(part))
         else:
             nodes.append(text_node(part))
     return nodes or [text_node("")]
 
 
-def table_cell(line, header=False):
+def table_cell(line, header=False, mention_lookup=None):
     ptype = "tableHeader" if header else "tableCell"
-    return {"type": ptype, "content": [{"type": "paragraph", "content": parse_inline(line.strip())}]}
+    return {"type": ptype, "content": [{"type": "paragraph", "content": parse_inline(line.strip(), mention_lookup)}]}
 
 
-def table_row(cells, header=False):
-    return {"type": "tableRow", "content": [table_cell(c, header=header) for c in cells]}
+def table_row(cells, header=False, mention_lookup=None):
+    return {"type": "tableRow", "content": [table_cell(c, header=header, mention_lookup=mention_lookup) for c in cells]}
 
 
 def is_table_separator(line):
@@ -161,7 +188,7 @@ def split_pipe_row(line):
     return [c.strip() for c in line.split("|")]
 
 
-def markdown_to_adf(md_text, cc_mentions=None):
+def markdown_to_adf(md_text, cc_mentions=None, inline_mention_lookup=None):
     lines = md_text.strip().split("\n")
     content = []
     i = 0
@@ -178,10 +205,10 @@ def markdown_to_adf(md_text, cc_mentions=None):
         # Table: a pipe row followed by a separator row
         if stripped.startswith("|") and i + 1 < n and is_table_separator(lines[i + 1]):
             header_cells = split_pipe_row(stripped)
-            rows = [table_row(header_cells, header=True)]
+            rows = [table_row(header_cells, header=True, mention_lookup=inline_mention_lookup)]
             i += 2
             while i < n and lines[i].strip().startswith("|"):
-                rows.append(table_row(split_pipe_row(lines[i]), header=False))
+                rows.append(table_row(split_pipe_row(lines[i]), header=False, mention_lookup=inline_mention_lookup))
                 i += 1
             content.append({
                 "type": "table",
@@ -195,7 +222,7 @@ def markdown_to_adf(md_text, cc_mentions=None):
             quote_text = stripped.lstrip(">").strip()
             content.append({
                 "type": "blockquote",
-                "content": [{"type": "paragraph", "content": parse_inline(quote_text)}],
+                "content": [{"type": "paragraph", "content": parse_inline(quote_text, inline_mention_lookup)}],
             })
             i += 1
             continue
@@ -211,7 +238,7 @@ def markdown_to_adf(md_text, cc_mentions=None):
             continue
 
         # Plain paragraph
-        content.append({"type": "paragraph", "content": parse_inline(stripped)})
+        content.append({"type": "paragraph", "content": parse_inline(stripped, inline_mention_lookup)})
         i += 1
 
     if cc_mentions:
@@ -247,6 +274,25 @@ def cmd_resolve(args):
     sys.exit(exit_code)
 
 
+def resolve_or_exit(creds, names, label):
+    """Resolve a list of names, exiting with every ambiguous match printed if
+    any name doesn't resolve to exactly one person. Shared by --cc and the
+    @[Name] inline-mention path so both fail the same way."""
+    resolved = {}
+    resolved_raw = resolve_names(creds, names)
+    for name, matches in resolved_raw.items():
+        if len(matches) != 1:
+            print(f"Cannot resolve {label} name '{name}': {len(matches)} matches found.")
+            for m in matches:
+                print(f"    {m['displayName']} <{m['email']}> ({m['accountId']})")
+            sys.exit(
+                f"Refusing to post with an ambiguous {label} name ('{name}'). "
+                "Pass the exact displayName from the list above, or use 'resolve' first."
+            )
+        resolved[name] = matches[0]
+    return resolved
+
+
 def cmd_post(args):
     creds = load_credentials()
 
@@ -256,19 +302,13 @@ def cmd_post(args):
     cc_mentions = []
     if args.cc:
         names = [n.strip() for n in args.cc.split(",") if n.strip()]
-        resolved = resolve_names(creds, names)
-        for name, matches in resolved.items():
-            if len(matches) != 1:
-                print(f"Cannot resolve CC name '{name}': {len(matches)} matches found.")
-                for m in matches:
-                    print(f"    {m['displayName']} <{m['email']}> ({m['accountId']})")
-                sys.exit(
-                    f"Refusing to post with an ambiguous CC name ('{name}'). "
-                    "Pass the exact displayName from the list above, or use 'resolve' first."
-                )
-            cc_mentions.append(matches[0])
+        resolved = resolve_or_exit(creds, names, "CC")
+        cc_mentions = list(resolved.values())
 
-    adf = markdown_to_adf(md_text, cc_mentions=cc_mentions)
+    inline_names = find_inline_mention_names(md_text)
+    inline_mention_lookup = resolve_or_exit(creds, inline_names, "@[...]") if inline_names else {}
+
+    adf = markdown_to_adf(md_text, cc_mentions=cc_mentions, inline_mention_lookup=inline_mention_lookup)
     payload = {"body": adf}
 
     if args.comment_id:

@@ -146,6 +146,16 @@ The script:
   then pass the exact `displayName` or `accountId`.
 - Emits real Jira `mention` nodes so CC'd people actually get notified — not plain
   `@Name` text, which is inert.
+- Also resolves `@[Name]` written anywhere inside the sign-off body itself, not just in
+  `--cc`. Use this to credit whoever clarified something mid-note — "@[saiteja.pulugurtha]
+  clarified: the API already supports this" — and that person gets a real mention, same
+  ambiguity check as `--cc`. Prefer the exact Jira username or displayName inside the
+  brackets; run `resolve` first for a name you haven't confirmed.
+
+Once a name is CC'd or `@[mentioned]` in the body, don't also write it out as plain text
+elsewhere (a second "CC: Name, Name" line at the bottom of the markdown) — the script
+already appends the real mention line from `--cc`, so a duplicate plain-text line just
+clutters the comment with an inert second CC that doesn't notify anyone.
 
 If the Atlassian MCP is connected instead of the `gh`/curl + credentials-file route,
 use the MCP's comment tools directly with the same ADF shape this script produces —
