@@ -1,18 +1,16 @@
 ---
 name: dev-signoff-writer
-description: Write a Dev sign-off from raw manual-test notes (steps taken, test data, network calls, a screenshot annotation) and post it as a Jira comment with CC mentions. Finds the one thing worth flagging using the SUCCESs framework (Made to Stick), writes it in plain ELI5 language with every acronym spelled out on first use, tightens it with the-humanizer (zero em dashes, no filler), and renders any step-by-step testing as a flat S.No | Action | Expected Result table (crisp-test-plan-writer's shape). Use when Divy pastes test notes and asks for a "Dev sign-off," a "sign-off comment," or to write up manual testing/validation results for a ticket, especially when a screenshot has a handwritten annotation calling out an edge case the happy-path steps missed.
+description: Write a Dev sign-off from raw manual-test notes (steps taken, test data, network calls, a screenshot annotation) and post it as a Jira comment with CC mentions. Finds the one thing worth flagging using the SUCCESs framework (Made to Stick), writes it in plain ELI5 language with every acronym spelled out on first use, tightens the language against a built-in AI-pattern checklist (zero em dashes, no filler, real contractions), and renders any step-by-step testing as a flat S.No | Action | Expected Result table. Fully self-contained — no other skill needs to be loaded. Use when Divy pastes test notes and asks for a "Dev sign-off," a "sign-off comment," or to write up manual testing/validation results for a ticket, especially when a screenshot has a handwritten annotation calling out an edge case the happy-path steps missed.
 ---
 
 # Dev Sign-Off Writer
 
-Composes three skills Divy already has, in a fixed order, for one recurring output: a
-short Jira comment that says "this works, except for this one real case, and here's
-the decision someone needs to make." Never write this from scratch — always run the
-pipeline below.
+One recurring output: a short Jira comment that says "this works, except for this one
+real case, and here's the decision someone needs to make." Self-contained — every rule
+below is the whole pipeline, nothing else needs loading. Run the four steps in order,
+never write this from scratch.
 
-## The four steps, in order
-
-### 1. Find the one thing worth flagging (SUCCESs)
+## Step 1: Find the one thing worth flagging (SUCCESs)
 
 Made to Stick's framework, applied to a bug-report-length note, not a whole essay:
 
@@ -31,7 +29,7 @@ Made to Stick's framework, applied to a bug-report-length note, not a whole essa
 If the raw notes don't contain a genuine gap (all cases pass clean), skip this step
 and write a plain pass confirmation. Don't manufacture a "gap" to fill the format.
 
-### 2. Write it ELI5 — ban acronyms and jargon
+## Step 2: Write it ELI5 — ban acronyms and jargon
 
 Every acronym gets spelled out in plain words the first time it appears, in the sentence
 itself, not a footnote. `TTL` becomes "the 60-day cool-down" (the actual number, not the
@@ -41,29 +39,48 @@ Care Unit" — spelling out the acronym is still jargon; say what it means in pr
 Rule of thumb: if a smart friend outside engineering would have to ask what a word
 means, replace the word with the thing it refers to.
 
-### 3. Tighten with the-humanizer
+## Step 3: Tighten the language
 
-Run the drafted text through the-humanizer's universal phrase-level and structural
-checks (load that skill directly — don't skip it or approximate its rules from memory).
-Non-negotiable for this output:
+Scan the drafted text against this checklist before posting. Fix every hit; don't
+eyeball it, actually search for each pattern.
 
-- **Zero em dashes.** Scan the final text character-by-character for `—` before posting
-  — a single read-through misses them (see the em-dash lesson already in
-  the-humanizer's own changelog). Confirm the count is 0, don't eyeball it.
-- Cut filler openers, hedge phrases, and "it is / does not" contraction-free register —
-  write like you'd say it out loud.
-- Contractions where a person would use them ("doesn't," "isn't," "won't").
-- No stacked fragments, no grandiose closers, no honesty-disclaimer phrases ("stated
-  bluntly," "I'll be honest").
+**Cut on sight (phrase-level):**
 
-Cut words. Don't cut substance — every finding and every open question from step 1
-survives, just said in fewer words.
+| Pattern | Example | Fix |
+|---|---|---|
+| Em dash | "the fix — once merged — closes this" | Rewrite with a comma or period. Search-count the `—` character; the answer must be 0. A single read-through misses them — this is the single most-missed step across every prior run of this pipeline. |
+| Contraction-free register | "It is not your setup, and the step does not need re-running" | "It isn't your setup, and the step doesn't need re-running." Write "isn't / doesn't / can't / won't" wherever a person would say it that way. Flag any 200+ word stretch with zero contractions. |
+| Hollow intensifiers | "crucial", "essential", "significantly" | Say the actual size or consequence instead. |
+| AI vocabulary | "leverage", "seamless", "robust", "streamline", "utilize", "comprehensive", "facilitate" | Plain verb: use, works everywhere, solid, simplify, use, full, help. |
+| Hedge phrases | "It's important to note that", "One might argue" | Cut the hedge, state the claim. |
+| Filler openers | "At the end of the day", "The truth is", "In today's landscape" | Cut; start with the actual point. |
+| Honesty-disclaimer phrases | "I'll be honest", "stated bluntly", "put bluntly" | Cut. Just state the claim. |
+| Runway sentences | vague hype line before the real detail | Cut the runway, open with the substance. |
 
-### 4. Render steps as a flat table
+**Cut on sight (structural):**
+
+- Opens with a generic claim instead of the specific finding.
+- Bullet/fragment stacking used as punchlines ("X. Y. Z." format) — rewrite as one
+  real sentence.
+- Three-part parallel structure ("It's not about X. It's about Y. It's about Z.") —
+  collapse to one direct sentence.
+- Contrast-negation ("This isn't about X. It's about Y.") — rewrite as a positive
+  declarative statement.
+- Credential-stacking or multi-clause throat-clearing before the actual point.
+- Grandiose-importance closer ("Everything here is a footnote to that sentence.",
+  "It all comes down to this.") — cut, or replace with the concrete next action.
+- Punchy orphan mic-drop closer as a standalone fragment — fold into a real final
+  paragraph or drop it.
+- Every list item opening with the same word (a repeated pseudo-label verb) — vary
+  the openers or drop the verb and name the thing directly.
+
+Cut words, don't cut substance. Every finding and every open question from Step 1
+survives — just said in fewer words, in the reader's own idiom.
+
+## Step 4: Render steps as a flat table
 
 If the raw notes include a numbered procedure (click-path + expected result), render it
-in crisp-test-plan-writer's fixed shape — a single flat table, no journeys, no named
-parts:
+as a single flat table — no journeys, no named parts, no edge-case sweep:
 
 ```
 | S.No | Action | Expected Result |
@@ -72,9 +89,12 @@ parts:
 ```
 
 Setup/test-data goes in its own small table above the steps table if there's a
-health-plan/member-ID/config matrix worth naming — same convention as a crisp test
-plan's Setup row, just split out since a sign-off usually has fixed reference data
-rather than a single setup step.
+health-plan/member-ID/config matrix worth naming, rather than folded into row 1 —
+a sign-off usually has fixed reference data rather than a single setup action.
+
+Never invent test data, member IDs, or error text to fill a row. Pull every value from
+what was actually pasted or screenshotted; if a value is missing, leave the cell as an
+open question instead of guessing.
 
 ## Output shape
 
@@ -100,9 +120,9 @@ generator sweep, no scoring pass. One gap, well told, beats five gaps skimmed.
 ## Posting to Jira
 
 Never hand-write the Atlassian Document Format (ADF) JSON or resolve names to Jira
-account IDs by re-deriving the mention structure each time — that's exactly the kind
-of deterministic, repeatable operation `write-a-skill` says belongs in a script. Use
-`scripts/post_signoff.py`:
+account IDs by re-deriving the mention structure each time — it's a deterministic,
+repeatable operation, so it lives in `scripts/post_signoff.py` instead of being
+regenerated by hand on every run:
 
 ```bash
 # Resolve names to account IDs first if any are ambiguous or unconfirmed
@@ -116,20 +136,21 @@ python3 scripts/post_signoff.py post ICS-25 signoff.md --cc "..." --comment-id 6
 ```
 
 The script:
-- Reads `~/.config/jira/credentials.env` for auth (same convention as `cohere-bug-triage`).
+- Reads `~/.config/jira/credentials.env` for auth.
 - Converts the markdown body (headings, bold, tables, blockquotes) to ADF — including
   real ADF tables, not pipe-text that renders as a wall of text in Jira.
-- Resolves each CC name via `user/search`. **If a name search returns more than one
-  match** (this happened with "Jeremy" — Jeremy Jones and Jeremy Wdowik both exist),
-  the script prints all matches and refuses to guess. Confirm with the user which one,
+- Resolves each CC name via `user/search`, preferring an exact `displayName` match over
+  Jira's fuzzy token match. **If a name still returns more than one match** (this
+  happened with "Jeremy" — Jeremy Jones, Jeremy Wdowik, and Jeremy.Rizalte all exist),
+  the script prints every match and refuses to guess. Confirm with the user which one,
   then pass the exact `displayName` or `accountId`.
 - Emits real Jira `mention` nodes so CC'd people actually get notified — not plain
   `@Name` text, which is inert.
 
 If the Atlassian MCP is connected instead of the `gh`/curl + credentials-file route,
 use the MCP's comment tools directly with the same ADF shape this script produces —
-don't duplicate the mention-resolution logic by hand in that path either; read
-`scripts/post_signoff.py` for the exact node shapes to replicate.
+read `scripts/post_signoff.py` for the exact node shapes to replicate rather than
+re-deriving them.
 
 ## Never
 
@@ -140,5 +161,4 @@ don't duplicate the mention-resolution logic by hand in that path either; read
   slower post — ask which person, every time a search returns 2+ matches.
 - Never invent test data, member IDs, or error text — pull them from what was actually
   pasted or screenshotted.
-- Never skip the em-dash scan. This is the single most-missed step across every prior
-  run of this pipeline.
+- Never skip the em-dash scan, and never eyeball it — count the character.
