@@ -12,7 +12,7 @@ metadata:
 
 | Version | Date | Changes |
 |---|---|---|
-| **v3.4.0** | **2026-09-30** | **Posting a plan as a Jira comment.** New Workflow step 16 and a *Posting to a Jira ticket* section. A ticket comment is not the doc: it skips everything above Setup (doc link, Problem, Status, Most likely failure, What changes, What didn't change), since the ticket already says that, and starts straight at the Setup table. It opens with a short, warm note that tags the dev by mention and includes one specific, true compliment about their work. It ends on the steps, not an open-questions list. Source: posting the ICS-23/24/27 plans, where the full doc header restated the ticket and the dev only needed the steps. |
+| **v3.4.0** | **2026-09-30** | **Posting a plan as a Jira comment.** New Workflow step 16 and a *Posting to a Jira ticket* section. A ticket comment is not the doc: it skips everything above Setup (doc link, Problem, Status, Most likely failure, What changes, What didn't change), since the ticket already says that, and starts straight at the Setup table. It opens with a short, warm note that tags the dev by mention, with a generic cheer-up line by default (a specific compliment only when it's natural, never dug up from their unrelated work). It ends on the steps, not an open-questions list. Source: posting the ICS-23/24/27 plans, where the full doc header restated the ticket and the dev only needed the steps. |
 | **v3.3.0** | **2026-08-05** | **Test data is a first-class step, not a placeholder.** New Workflow step 7 (*Resolve the test data before writing setup*) and PLAYBOOK §9 *Sourcing test data*: name the tab not just the workbook, look up by keyword with formulas rather than bulk reads (large sheets truncate, and a truncated read looks complete), prefer a pre-bundled identifier column, `COUNTIF` before taking the first match, and match the sub-dimension the gate actually reads. Adds the alias check (verify a tenant name against the sheet's distinct list before writing it into a plan — names from call transcripts are often wrong), the "no test member for X ages badly" rule, the distinction between *no member* and *tenant not configurable in this environment*, five test-data traps, and a clean-up-your-scratch-work rule for shared source-of-truth sheets. Source: three PO-review plans where the call's health plan ("Avira") did not exist in the worksheet at all, a documented "no HMSA test member" blocker turned out to be stale with five members available, and the only listed member for one tenant was the wrong line of business for the rule being tested. |
 | **v3.2.0** | **2026-08-04** | **Written for the person clicking, and grounded in the diff.** Two additions. (1) **No coding language in the plan body** — field names, status codes, hook names, repo and PR numbers, and language trivia go in a Reference footer, never in a step. Every step now answers *where to go / what to do / how it should look*, rendered as a table once there's more than one setup phase. (2) **Read the shipped diff before writing steps** — new Workflow step 6 plus PLAYBOOK §7 *Mining the diff*. On the ticket that prompted this, the diff answered five of eight questions that had been queued for humans, and produced the highest-value step in the plan (a bug the devs hit and fixed). Added five edge-case generators (the deleted key, the loading race, the deliberately-unchanged sibling, the pre-validator record, case-insensitive vs typo-tolerant), three assumption traps (ACs contradicting shipped code, a ticket's example values treated as real, a test account that cannot match the gate), and the false-pass check. Source: a group-based access-control plan where the ticket's own acceptance criteria contradicted the merged code, and a draft config carried a one-character typo in exactly the field the feature fails silently on. |
 | v3.1.0 | 2026-08-04 | **One default shape, not two.** Collapsed the old 3-section house format (Original Draft / Meeting Notes / Test Plan) and the migration-only variant into a single default template used every time, regardless of ticket count: `Test Plan` / `Assigned to` / `Tickets` / `Problem:` one-liner / `What is [X]?` (or `[X] and [Y]?` for linked tickets) / `Setup:` / `Steps to test tickets` / `Open questions`. If a draft was already given, it's folded silently into "What is X?" and "Steps" — it no longer gets reproduced as its own section. `Before:`/`Now:`/`What changed:`/`Why test:` lines and the arrow-chain ticket linkage are now the default explainer shape for every plan, not an opt-in for migrations only. Source: Divy asking for the same structure on a single-ticket plan that had been used for a 3-ticket migration plan — the two formats were an unrequested distinction the skill invented, not something he asked for. |
@@ -253,14 +253,17 @@ Google Doc. The comment goes straight from the note to the **Setup** table, then
 
 **Open with a short note to the dev, tagged by mention.** Shape:
 
-> Hey @dev, [one specific, true compliment]. I've added the test plan for TICKET below, feel
-> free to check it out. If anything looks bad or wrong, drop feedback and I'll update it. Thanks!!
+> Hey @dev, hope your week's going well, and thanks for picking this one up! I've added the test
+> plan for TICKET below, feel free to check it out. If anything looks bad or wrong, drop feedback
+> and I'll update it. Thanks!!
 
-- **The compliment must be real and specific.** Pull it from something the dev actually did:
-  a clear PR description, test data or steps they posted on a related ticket, a recording, a
-  quick fix. Look at their recent comments and PRs before writing it. Name the thing ("your
-  ICS-25 write-up with the DEV test data and recording"). A generic "great work!" reads as filler.
-  If you can't find anything concrete, drop the compliment rather than inventing one.
+- **Default to a short, generic cheer-up line.** Something warm and light ("hope your week's
+  going well", "thanks for picking this one up"), not a compliment on their last ticket. Don't go
+  digging through the dev's other PRs and tickets to find something to praise every time; a
+  specific compliment on unrelated work in every comment reads forced.
+- **A specific compliment is optional**, only when it's natural and about work on or right next
+  to this ticket (e.g. they posted clear test data or a recording on the linked ticket). Vary the
+  wording across comments so it doesn't read like a template.
 - **Tag the ticket's POC or assignee** with a real Jira mention node (account ID from their
   comments or the assignee field), not plain `@name` text.
 - **No open-questions list at the bottom.** The comment ends on the last Part. If something is
