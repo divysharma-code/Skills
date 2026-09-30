@@ -1,7 +1,7 @@
 ---
 name: test-plan-writer
 description: "Write a test plan for a ticket, feature, or change as an end-to-end user journey rather than a checklist of acceptance criteria. Walks the workflow the way a real user would, confirms existing business logic still holds, and puts the effort on the edge cases that survive normal testing — records created before the change, the thing that got removed, missing optional data, stale state after a switch. Generates the questions to ask engineering about which fields and collections a change touches instead of guessing at them. Use when asked to write or review a test plan, a QA plan, UAT steps, a validation plan, or test cases for a ticket; when asked how to test a feature or what could break; or when a test plan reads like restated acceptance criteria and needs rewriting as a journey."
-version: 3.3.0
+version: 3.4.0
 author: Divy Sharma
 license: MIT
 metadata:
@@ -12,6 +12,7 @@ metadata:
 
 | Version | Date | Changes |
 |---|---|---|
+| **v3.4.0** | **2026-09-30** | **Posting a plan as a Jira comment.** New Workflow step 16 and a *Posting to a Jira ticket* section. A ticket comment is not the doc: it skips everything above Setup (doc link, Problem, Status, Most likely failure, What changes, What didn't change), since the ticket already says that, and starts straight at the Setup table. It opens with a short, warm note that tags the dev by mention and includes one specific, true compliment about their work. It ends on the steps, not an open-questions list. Source: posting the ICS-23/24/27 plans, where the full doc header restated the ticket and the dev only needed the steps. |
 | **v3.3.0** | **2026-08-05** | **Test data is a first-class step, not a placeholder.** New Workflow step 7 (*Resolve the test data before writing setup*) and PLAYBOOK §9 *Sourcing test data*: name the tab not just the workbook, look up by keyword with formulas rather than bulk reads (large sheets truncate, and a truncated read looks complete), prefer a pre-bundled identifier column, `COUNTIF` before taking the first match, and match the sub-dimension the gate actually reads. Adds the alias check (verify a tenant name against the sheet's distinct list before writing it into a plan — names from call transcripts are often wrong), the "no test member for X ages badly" rule, the distinction between *no member* and *tenant not configurable in this environment*, five test-data traps, and a clean-up-your-scratch-work rule for shared source-of-truth sheets. Source: three PO-review plans where the call's health plan ("Avira") did not exist in the worksheet at all, a documented "no HMSA test member" blocker turned out to be stale with five members available, and the only listed member for one tenant was the wrong line of business for the rule being tested. |
 | **v3.2.0** | **2026-08-04** | **Written for the person clicking, and grounded in the diff.** Two additions. (1) **No coding language in the plan body** — field names, status codes, hook names, repo and PR numbers, and language trivia go in a Reference footer, never in a step. Every step now answers *where to go / what to do / how it should look*, rendered as a table once there's more than one setup phase. (2) **Read the shipped diff before writing steps** — new Workflow step 6 plus PLAYBOOK §7 *Mining the diff*. On the ticket that prompted this, the diff answered five of eight questions that had been queued for humans, and produced the highest-value step in the plan (a bug the devs hit and fixed). Added five edge-case generators (the deleted key, the loading race, the deliberately-unchanged sibling, the pre-validator record, case-insensitive vs typo-tolerant), three assumption traps (ACs contradicting shipped code, a ticket's example values treated as real, a test account that cannot match the gate), and the false-pass check. Source: a group-based access-control plan where the ticket's own acceptance criteria contradicted the merged code, and a draft config carried a one-character typo in exactly the field the feature fails silently on. |
 | v3.1.0 | 2026-08-04 | **One default shape, not two.** Collapsed the old 3-section house format (Original Draft / Meeting Notes / Test Plan) and the migration-only variant into a single default template used every time, regardless of ticket count: `Test Plan` / `Assigned to` / `Tickets` / `Problem:` one-liner / `What is [X]?` (or `[X] and [Y]?` for linked tickets) / `Setup:` / `Steps to test tickets` / `Open questions`. If a draft was already given, it's folded silently into "What is X?" and "Steps" — it no longer gets reproduced as its own section. `Before:`/`Now:`/`What changed:`/`Why test:` lines and the arrow-chain ticket linkage are now the default explainer shape for every plan, not an opt-in for migrations only. Source: Divy asking for the same structure on a single-ticket plan that had been used for a 3-ticket migration plan — the two formats were an unrequested distinction the skill invented, not something he asked for. |
@@ -237,6 +238,37 @@ Nothing is written back to the tracker until you say so.
     into a Google Doc, markdown must be uploaded as markdown for the tables to convert — a
     plain-text insert turns every table into pipe soup. That replaces the file's contents, so
     fold anything worth keeping from the old version into the upload and say what you did.
+
+16. **→ Posting to a Jira ticket? Post the steps, not the doc.** Follow *Posting to a Jira
+    ticket* below. The comment starts at Setup, and a short note to the dev goes on top.
+
+## Posting to a Jira ticket
+
+A plan posted as a ticket comment is for the dev who built it. The ticket already explains the
+change, so the comment doesn't restate it.
+
+**Skip everything above Setup.** Leave out the doc link, the test-data link line, *Problem*,
+*Status*, *Most likely failure*, *What changes*, and *What didn't change*. Those stay in the
+Google Doc. The comment goes straight from the note to the **Setup** table, then the Parts.
+
+**Open with a short note to the dev, tagged by mention.** Shape:
+
+> Hey @dev, [one specific, true compliment]. I've added the test plan for TICKET below, feel
+> free to check it out. If anything looks bad or wrong, drop feedback and I'll update it. Thanks!!
+
+- **The compliment must be real and specific.** Pull it from something the dev actually did:
+  a clear PR description, test data or steps they posted on a related ticket, a recording, a
+  quick fix. Look at their recent comments and PRs before writing it. Name the thing ("your
+  ICS-25 write-up with the DEV test data and recording"). A generic "great work!" reads as filler.
+  If you can't find anything concrete, drop the compliment rather than inventing one.
+- **Tag the ticket's POC or assignee** with a real Jira mention node (account ID from their
+  comments or the assignee field), not plain `@name` text.
+- **No open-questions list at the bottom.** The comment ends on the last Part. If something is
+  blocking a step (missing logins, a flag state), fold it into the note as one short ask.
+- **Keep test data out of the comment.** Link to the rows in the test-data sheet instead of
+  writing member IDs or DOBs into the ticket.
+- Confirm before posting, like any other tracker write. To fix a posted comment, edit it in
+  place rather than posting a second one.
 
 ## Never
 
