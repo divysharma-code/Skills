@@ -17,6 +17,11 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
+from zoneinfo import ZoneInfo
+
+# The team labels EOD days in US Eastern time (matches existing 🤖 comments), whatever
+# timezone the person running this is in. Override with EOD_TZ if a team differs.
+REPORT_TZ = ZoneInfo(os.environ.get("EOD_TZ", "America/New_York"))
 
 TEAMS = {
     "ibex": {"project": "ICS", "board": 7962},
@@ -58,8 +63,28 @@ def call(c, method, path, body=None):
         sys.exit(f"Jira {e.code} on {method} {path}: {e.read().decode(errors='replace')}")
 
 
+def local_tz(c):
+    """Jira evaluates JQL days in the API user's profile timezone, so match that."""
+    return ZoneInfo(call(c, "GET", "/rest/api/3/myself")["timeZone"])
+
+
+def status_moves(c, key, tz):
+    """All status transitions as (local datetime, from, to), oldest first, fully paginated."""
+    out, start = [], 0
+    while True:
+        r = call(c, "GET", f"/rest/api/3/issue/{key}/changelog?startAt={start}&maxResults=100")
+        for h in r.get("values", []):
+            when = dt.datetime.strptime(h["created"], "%Y-%m-%dT%H:%M:%S.%f%z").astimezone(tz)
+            for it in h["items"]:
+                if it["field"] == "status":
+                    out.append((when, it["fromString"], it["toString"]))
+        start += len(r.get("values", []))
+        if r.get("isLast", True) or not r.get("values"):
+            return sorted(out)
+
+
 def last_working_day(today=None):
-    d = today or dt.date.today()
+    d = today or dt.datetime.now(REPORT_TZ).date()
     d -= dt.timedelta(days=1)
     while d.weekday() >= 5:
         d -= dt.timedelta(days=1)
@@ -87,8 +112,13 @@ def cmd_fetch(a):
     if not team:
         sys.exit(f"Unknown team '{a.team}'. Choose from: {', '.join(TEAMS)}")
     c = creds()
+    tz = REPORT_TZ
+    jtz = local_tz(c)
     date = dt.date.fromisoformat(a.date) if a.date else last_working_day()
     nxt = date + dt.timedelta(days=1)
+    # JQL reads dates in the API user's profile timezone, so express the Eastern day in that zone.
+    lo = dt.datetime.combine(date, dt.time(0), tz).astimezone(jtz).strftime("%Y-%m-%d %H:%M")
+    hi = dt.datetime.combine(nxt, dt.time(0), tz).astimezone(jtz).strftime("%Y-%m-%d %H:%M")
 
     sprints = call(c, "GET", f"/rest/agile/1.0/board/{team['board']}/sprint?state=active")["values"]
     sprints = [s for s in sprints if s.get("originBoardId") == team["board"]]
@@ -99,7 +129,7 @@ def cmd_fetch(a):
 
     jql = (
         f'project = {team["project"]} AND sprint in ({ids}) '
-        f'AND status changed DURING ("{date} 00:00","{nxt} 00:00") '
+        f'AND status changed DURING ("{lo}","{hi}") '
         f'AND status != "Ready for Dev" AND issuetype != Sub-task'
     )
     q = urllib.parse.urlencode({"jql": jql, "fields": "summary,status,assignee,issuetype", "maxResults": 100})
@@ -111,17 +141,13 @@ def cmd_fetch(a):
     for i in issues:
         key = i["key"]
         f = i["fields"]
-        cl = call(c, "GET", f"/rest/api/3/issue/{key}?expand=changelog&fields=status")["changelog"]["histories"]
-        moves = sorted(
-            (h["created"], it["fromString"], it["toString"])
-            for h in cl for it in h["items"] if it["field"] == "status"
-        )
-        day = [m for m in moves if m[0].startswith(str(date))]
+        moves = status_moves(c, key, tz)
+        day = [m for m in moves if m[0].date() == date]
         eod_status = day[-1][2] if day else f["status"]["name"]
         print(f"\n{key} | {f['issuetype']['name']} | {(f.get('assignee') or {}).get('displayName')} | {f['summary']}")
-        print(f"  status at end of {date}: {eod_status} (now: {f['status']['name']})")
+        print(f"  status at end of {date}: {eod_status} (now: {f['status']['name']})  [times in {tz.key}]")
         for t, frm, to in day:
-            print(f"  {t[11:16]}  {frm} -> {to}")
+            print(f"  {t:%H:%M}  {frm} -> {to}")
         existing = eod_comments(c, key, date)
         if existing:
             print(f"  existing EOD comment: id {existing[0]['id']} (use --update to edit)")

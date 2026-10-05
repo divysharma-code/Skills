@@ -5,6 +5,8 @@ description: Post a one-sentence automated EOD status comment on every Jira tick
 
 # EOD Jira Status Updater
 
+Based on Paridhi Jain's original EOD updater, extended for the Ibex, Aries and Cabra teams.
+
 Each morning: for one team, find the tickets whose status changed on the report day
 (default: last working day), and leave a single-sentence 🤖 comment on each saying what
 moved, why, and what is next.
@@ -41,6 +43,13 @@ so search both titles. Release docs live in Confluence space `ENG` and are title
 
 Default is the last working day (yesterday; Friday if today is Monday). The user can
 name any date. Use it everywhere below as `DATE`.
+
+Days are counted in **US Eastern time**, the same as the team's existing 🤖 comments,
+whatever timezone you are in (set `EOD_TZ` to override). A move at 9pm Eastern on the 1st
+belongs to the 1st even though it is already the 2nd in India. The script handles this.
+
+Paridhi may already run this for Aries. The script skips any ticket that already has a 🤖
+comment for `DATE`, so running it twice never double-comments.
 
 ### 2. Fetch the tickets
 
