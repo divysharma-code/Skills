@@ -56,7 +56,7 @@ update" filler.
 7. **Write one line per ticket**, in `eod-updater`'s exact format:
    `🤖 **EOD Status (YYYY-MM-DD):** <one sentence>`. What moved or was decided, why, what's next.
    Real details only (PR numbers, steps, config names). A line from a Slack/Fellow source
-   states the fact, not "someone said in Slack".
+   states the fact, not "someone said in Slack". Shape it with the SUCCESs pass in [REFERENCE.md](REFERENCE.md).
 8. **Show the table, then post.** Table: Ticket | Evidence used (Jira/Fellow/Slack) | Comment.
    Posting is the point of the skill, so don't re-ask if the user said to run it. If a
    comment relies on a single Slack message or one-line transcript snippet, mark it
@@ -65,6 +65,11 @@ update" filler.
    (add `--update` to replace an existing one).
 9. **Report.** Counts posted / skipped (already had one) / no evidence, plus one line on
    what wasn't checked (Slack, Fellow, release doc).
+
+## Writing the sentence
+
+Run every draft through the SUCCESs pass and the language pass in
+[REFERENCE.md](REFERENCE.md). The line stays one sentence in `eod-updater`'s format.
 
 ## Rules specific to this skill
 
