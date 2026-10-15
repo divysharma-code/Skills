@@ -1,5 +1,6 @@
 ---
 name: cohere-initiative-doc-writer
+version: 2.0.0
 description: Write Cohere Health Confluence pages for a product initiative, in one of three house styles: a pre-build "Initiative Brief" (problem statement, JTBD, timeline, open questions, stakeholders — used to scope and pitch work, and kept live/updated as phases ship), a post-build "Feature/Capability Reference" (Overview, Why, Definitions, What we built, Example Walkthrough, How it's configured, FAQ — for a shipped feature, mixed PM/eng/ops audience), or a plain-English "Feature Documentation" page in the Fax Intake Close Reason shape (Product Overview, Demo with a Step | Action | Script table, Reporting and Analytics, Release Information, Other Resources with FAQ and stakeholders — for a feature that is built or nearly built, read by CX, Ops and new PMs). Use when Divy asks to write up a new initiative, draft a PRD/brief for an initiative, document a feature that just shipped, write the feature doc or product documentation page for a feature, write a page "like Fax Intake Close Reason", write an "Initiative | <Name>" page, or turn a Jira epic into a Confluence doc. Distinct from cohere-config-doc-writer (that's the narrower engineering-only "Context → Components → Configuration Example" format for a single config block, written for the engineer flipping the key — not the initiative-level narrative this skill covers), jira-ticket-writer (breaks an initiative into Jira stories, not Confluence prose), and release-notes-writer (a short internal "what shipped" announcement for Ops/CX, not the full reference doc).
 ---
 
@@ -163,10 +164,74 @@ Voice rules (Divy corrected these on the Temp ID doc, 2026-10-15):
   line after every list, and avoid `<angle>` text. Read the doc back after
   import; code blocks and a heading can turn into smart chips.
 
+## Building a brief that is easy to act on (learned on the Temp ID brief)
+
+Order of work, so the doc is right the first time:
+
+1. **Read the live source pages first**, not saved copies. Fetch the existing
+   feature page, its sibling config pages and the mini-spike with
+   `getConfluencePage`. A saved copy was stale once and hid a later edit.
+2. **Build a "What already existed, and what this adds" table** (Capability |
+   Already existed | Added). It answers the first question every reviewer asks.
+   Put it at the BOTTOM of the page; the top stays about the problem.
+3. **Pull setup steps and screenshots from the tickets' own test plans and
+   comments** (steps, config, DEV screenshots). Check the code (core-platform,
+   `?ref=develop`) for exact field names and rules before writing them.
+4. **Keep success metrics to about four**, with a Goal | How we measure it |
+   Target table. Drop any metric whose baseline is `[GAP]` and has no target
+   yet. Also add the same short table to the Jira epic description.
+5. **Put screenshots inside the table cell where the step is**, with a
+   one-line caption, instead of a separate screenshots section.
+6. **Use short tables with a one-line "how to use this table" above each**
+   for configuration (Want | Put it in | User sees; If | Then; You see | Cause
+   | Fix). Cut prose that repeats a table.
+7. **Add diagrams** (see below), then a Links table at the very bottom with a
+   real link on every row (Confluence pages, Jira keys, Figma, FigJam).
+8. **Tag the squad** as real mentions, after checking each account ID.
+9. **Place the page** beside the existing feature page in the tree (same
+   parent), using the move call, not a full-body update.
+
+### Diagrams (FigJam via `generate_diagram`)
+
+- Two diagrams are enough: the user's end-to-end journey, and the configuration
+  team's steps. Ask the one question that decides the shape (audience), with a
+  recommendation, before drawing. Build from the docs; do not invent steps.
+- The tool lays each phase out as its own section on a very wide or very tall
+  canvas, so one picture of the whole board is unreadable. Put the board LINK
+  on the page plus pictures of the one or two key sections only.
+- Never draw two arrows between the same pair of nodes with different labels;
+  the labels overlap. Merge them into one arrow (e.g. "Hidden or left blank").
+- Loose shapes cannot be rendered as one picture. Wrap them in a section with
+  `use_figma` first (append each node, then resize the section), then use
+  `get_screenshot` on the section and LOOK at it before uploading.
+- Upload pictures to the page with the Confluence attachment endpoint, then
+  reference them with `ac:image`. There is no attachment tool in the MCP.
+
+### Safety rules for editing a live page
+
+- Divy edits the page between your passes. ALWAYS re-read the live body right
+  before writing, match with whitespace-tolerant patterns, and stop if a
+  pattern is not found exactly once. Never overwrite from an old copy.
+- Replace only the block you mean to change. Check the image and table counts
+  are unchanged before saving.
+- Screenshots must show test data only. Crop out other patients' rows, names
+  and addresses; view each crop before uploading it. Say so if a crop was
+  wrong, and replace the attachment.
+- The node-edit tools replace the whole body; use the REST calls for small
+  edits and for moving a page.
+- Confirm before publishing a new page, tagging people, or moving a page.
+
+### Naming
+
+When asked for initiative names, give five options in a table (Name | Why it
+works | Watch out), keep the `Initiative | ` prefix, name the outcome and who
+benefits, and recommend one.
+
 ## Formatting constants (all templates)
 
-- TOC macro is always the first thing on the page (Initiative Brief and
-  Feature/Capability Reference only; the Feature Documentation shape has none).
+- TOC macro near the top of the page. Initiative Brief and Feature/Capability
+  Reference: always. Feature Documentation: optional (Divy may ask for one;
+  use the Confluence `toc` macro, levels 2 to 3).
 - Bullets and tables over prose; cap paragraphs at ~3 sentences.
 - Config/flags are always named exactly as they appear in code/LaunchDarkly,
   in `code formatting` — never paraphrased.
@@ -193,4 +258,15 @@ prioritization conversations. Ask instead.
 
 Draft the page content and show it to Divy before writing anything to
 Confluence — this is a confirm-before-post skill, same as cohere-bug-triage.
-Only call the Confluence write tools after he approves.
+Only call the Confluence write tools after he approves. Once he has approved
+the page, later edits to that same page (trim, add a section, add links) need
+no new approval, but still follow the safety rules above.
+
+## Changelog
+
+- **2.0.0** — Added the Feature Documentation template; the always-confirm-the-
+  shape rule; the "Building a brief that is easy to act on" workflow (existing
+  vs added table, short success metrics, screenshots in step rows, short
+  config tables, FigJam diagrams, Links at the bottom, tagging, page
+  placement); live-page safety rules; naming options.
+- **1.0.0** — Initiative Brief and Feature/Capability Reference templates.
