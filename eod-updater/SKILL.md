@@ -1,6 +1,6 @@
 ---
 name: eod-updater
-description: Post a one-sentence automated EOD status comment on every Jira ticket in a Cohere Intake team's (Ibex, Aries, or Cabra) active sprint that changed status on a given day, defaulting to the last working day so it can be run each morning for yesterday. Pulls the day's status changes from Jira, context from that team's Fellow standup and sprint-planning recordings, the Confluence release doc to catch tickets that shipped to prod without a status change, and Slack when a Slack tool is connected (skipped and flagged when it isn't). Use when the user says "run EOD updater", "post EOD updates", "EOD status", or "update tickets for yesterday".
+description: Post a one-line automated EOD status comment (what moved, why, and a short "Next:" step) on every Jira ticket in a Cohere Intake team's (Ibex, Aries, or Cabra) active sprint that changed status on a given day, defaulting to the last working day so it can be run each morning for yesterday. Pulls the day's status changes from Jira, context from that team's Fellow standup and sprint-planning recordings, the Confluence release doc to catch tickets that shipped to prod without a status change, and Slack when a Slack tool is connected (skipped and flagged when it isn't). Use when the user says "run EOD updater", "post EOD updates", "EOD status", or "update tickets for yesterday".
 ---
 
 # EOD Jira Status Updater
@@ -8,8 +8,8 @@ description: Post a one-sentence automated EOD status comment on every Jira tick
 Based on Paridhi Jain's original EOD updater, extended for the Ibex, Aries and Cabra teams.
 
 Each morning: for one team, find the tickets whose status changed on the report day
-(default: last working day), and leave a single-sentence 🤖 comment on each saying what
-moved, why, and what is next.
+(default: last working day), and leave a short single-line 🤖 comment on each saying what
+moved, why, and a one-line `Next:` step.
 
 ## What it needs
 
@@ -88,19 +88,20 @@ shipped from a parent in the doc.
 Format, exactly:
 
 ```
-🤖 **EOD Status (YYYY-MM-DD):** <one sentence>
+🤖 **EOD Status (YYYY-MM-DD):** <one sentence on what moved and why> Next: <one short line, the single next step>.
 ```
 
-- One sentence. No bullets, no second paragraph.
-- Say what moved, why, and what happens next (blocker, PR, who is waiting on whom).
+- Two parts on ONE line (the script rejects line breaks): the status sentence, then a `Next:` clause. No bullets, no second paragraph.
+- Status sentence: what moved and why, plus any blocker, PR, or who is waiting on whom.
+- `Next:` clause (always present, even on Done or Shipped tickets): the single concrete next step, with an owner when known, e.g. `Next: Akshitha gets the AWS team's PR approval, then merges.` Source it from the standup action items, the latest Jira comments, or the status itself (Ready to Deploy means ships in the next release, PO Review means PO sign-off). Done tickets with nothing left say `Next: nothing, <why it's closed out>.` Never invent an owner or date.
 - Use real details (test-plan step counts, PR numbers, config names), never invented ones.
 - Zero em dashes. Use contractions where a person would. No "leverage", "seamless", "robust".
-- Shipped tickets: `Shipped to prod in the <date> release, <owner>'s <what shipped> passed pre- and post-release validation (<one concrete detail>).`
+- Shipped tickets: `Shipped to prod in the <date> release, <owner>'s <what shipped> passed pre- and post-release validation (<one concrete detail>). Next: <e.g. nothing, or the follow-up like a release note or config rollout>.`
 - No standup or Slack context? Write it from the Jira transition and comments alone.
 
 ### 6. Show the drafts, then post
 
-Show a table (Ticket | End-of-day status | Comment) and post. Posting is the whole point of
+Show a table (Ticket | End-of-day status | Comment incl. Next step) and post. Posting is the whole point of
 this skill, so do not ask again if the user already said to run it.
 
 ```bash
