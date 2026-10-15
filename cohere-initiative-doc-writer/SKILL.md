@@ -1,18 +1,22 @@
 ---
 name: cohere-initiative-doc-writer
-description: Write Cohere Health Confluence pages for a product initiative, in one of two house styles depending on where the initiative is in its lifecycle: a pre-build "Initiative Brief" (problem statement, JTBD, timeline, open questions, stakeholders — used to scope and pitch work, and kept live/updated as phases ship) or a post-build "Feature/Capability Reference" (Overview, Why, Definitions, What we built, Example Walkthrough, How it's configured, FAQ — used to document a shipped feature for a mixed PM/eng/ops audience). Use when Divy asks to write up a new initiative, draft a PRD/brief for an initiative, document a feature that just shipped, write an "Initiative | <Name>" page, or turn a Jira epic into a Confluence doc. Distinct from cohere-config-doc-writer (that's the narrower engineering-only "Context → Components → Configuration Example" format for a single config block, written for the engineer flipping the key — not the initiative-level narrative this skill covers), jira-ticket-writer (breaks an initiative into Jira stories, not Confluence prose), and release-notes-writer (a short internal "what shipped" announcement for Ops/CX, not the full reference doc).
+description: Write Cohere Health Confluence pages for a product initiative, in one of three house styles: a pre-build "Initiative Brief" (problem statement, JTBD, timeline, open questions, stakeholders — used to scope and pitch work, and kept live/updated as phases ship), a post-build "Feature/Capability Reference" (Overview, Why, Definitions, What we built, Example Walkthrough, How it's configured, FAQ — for a shipped feature, mixed PM/eng/ops audience), or a plain-English "Feature Documentation" page in the Fax Intake Close Reason shape (Product Overview, Demo with a Step | Action | Script table, Reporting and Analytics, Release Information, Other Resources with FAQ and stakeholders — for a feature that is built or nearly built, read by CX, Ops and new PMs). Use when Divy asks to write up a new initiative, draft a PRD/brief for an initiative, document a feature that just shipped, write the feature doc or product documentation page for a feature, write a page "like Fax Intake Close Reason", write an "Initiative | <Name>" page, or turn a Jira epic into a Confluence doc. Distinct from cohere-config-doc-writer (that's the narrower engineering-only "Context → Components → Configuration Example" format for a single config block, written for the engineer flipping the key — not the initiative-level narrative this skill covers), jira-ticket-writer (breaks an initiative into Jira stories, not Confluence prose), and release-notes-writer (a short internal "what shipped" announcement for Ops/CX, not the full reference doc).
 ---
 
 # Cohere Initiative Doc Writer
 
-Cohere documents initiatives in two distinct Confluence house styles depending
-on lifecycle stage. Read the matching reference file once before your first
-use of that template — each is a real page this template was extracted from
-and doubles as a calibration example.
+Cohere documents initiatives in three distinct Confluence house styles. Read
+the matching reference file once before your first use of that template — each
+is a real page this template was extracted from and doubles as a calibration
+example.
 
 ## Which template
 
-Ask if it's not obvious from context:
+ALWAYS confirm the shape with Divy before drafting unless he named it or linked
+a page to copy. Guessing the wrong shape wastes a whole draft (it happened on
+the Temp ID doc: Brief, then Reference, then a rebuild once he linked the page
+he wanted). If he links a live Confluence page, fetch it with
+`getConfluencePage` and match THAT page's sections, not a saved copy.
 
 - **Still being scoped / not yet built, or written alongside the pitch** →
   Initiative Brief. Title format `Initiative | <Name>`. See
@@ -20,6 +24,18 @@ Ask if it's not obvious from context:
 - **Already shipped, and you're documenting what it does / how it's
   configured** → Feature/Capability Reference. See
   `references/example-bypass-crd-redirect-reference.md`.
+- **A feature page a CX, Ops or new-PM reader can follow end to end: what it
+  is, why, a demo script, where to see it in Kibana, which flag, FAQ, who owns
+  it** → Feature Documentation (Fax Intake Close Reason shape). Title is the
+  plain feature name. See `references/example-fax-close-reason-feature-doc.md`.
+  Pick this when Divy says "feature doc", "product documentation", "like Fax
+  Intake Close Reason", or wants a demo script with it. Works while the feature
+  is still finishing: mark open items `[GAP]` rather than waiting.
+
+Not this skill: the commercialization business case ("New Product / Feature
+Template", ENG space, owned by Commercialization) and the technical-services
+config how-to ("[TEMPLATE] Configuration Documentation", Cohere Hub space; use
+`cohere-config-doc-writer`). Different owners, different readers.
 
 A hub concept matters for the Reference template only: if this feature
 extends an existing durable capability (e.g. "PA Check"), it should nest as a
@@ -99,9 +115,58 @@ genuinely doesn't fit it:
 9. **Other Resources** — links only (Jira epic, Figma, related config page).
    Never duplicate their content here.
 
-## Formatting constants (both templates)
+## Feature Documentation template (Fax Intake Close Reason shape)
 
-- TOC macro is always the first thing on the page.
+Title: the plain feature name (no `Initiative |` prefix). The headings are
+H1 sections, in this order:
+
+1. **Product Overview**
+   - **Feature Details** — what it is in plain words, then 2 or 3 bullets of
+     what the user sees. Say what changed from the old behavior and what an
+     unconfigured client gets (usually "exactly as before").
+   - **Why We Built It** — the old pain in 1 short paragraph or 2 bullets.
+   - **Known Gaps/Out of Scope** — bullets. Put follow-up tickets and
+     unconfirmed assumptions here instead of burying them.
+2. **Demo**
+   - **Step by Step Walkthrough** — table `Step | Action | Script`. The Script
+     column is a first-person line Divy could say out loud to a client, set in
+     one concrete scenario (e.g. a newborn in the NICU). Continue rows with a
+     blank Step cell.
+   - Optional: "NEW Addition!" block for a later change (what is changing,
+     impact, config snippet) and a Demo Video link.
+3. **Reporting and Analytics** — Kibana link, where the value is recorded
+   (field name), what to watch after launch.
+4. **Release Information** — feature flag (exact string, `code format`),
+   relevant user roles, which payers it is released to. Put the config how-to
+   here as a "Configuration" subsection: where to click (My Account >
+   Configuration Management > Feature > health plan), a Setting | What it does
+   | If left empty table, and a literal config snippet. Verify every field
+   name against the config class in core-platform (`?ref=develop`) before
+   writing it.
+5. **Other Resources**
+   - **FAQ** — numbered, bold question then answer. Include "what happens to a
+     client I don't configure?" and "what did the old page get wrong".
+   - **Documentation / Important Links** — Slack, initiative doc, designs,
+     technical docs, Jira epic(s). Ticket keys live HERE and nowhere else.
+   - **Key Stakeholders** — PM Owner, Dev Lead, Informed.
+
+Voice rules (Divy corrected these on the Temp ID doc, 2026-10-15):
+
+- Plain English first. Expand every acronym and term on first use.
+- No ticket keys, config names or permission names in the body prose. They go
+  in the Release Information config table and the Links section only.
+- Describe the user's journey in the Demo script, not the engineering story.
+- Tables and short bullets over paragraphs. No em dashes.
+- Anything unknown is `[GAP]`, never a guess. Do not invent a PM owner: if the
+  Jira epic owner is the only evidence, say so and let Divy confirm.
+- For Google Docs delivery via import: write real `#` headings, put a blank
+  line after every list, and avoid `<angle>` text. Read the doc back after
+  import; code blocks and a heading can turn into smart chips.
+
+## Formatting constants (all templates)
+
+- TOC macro is always the first thing on the page (Initiative Brief and
+  Feature/Capability Reference only; the Feature Documentation shape has none).
 - Bullets and tables over prose; cap paragraphs at ~3 sentences.
 - Config/flags are always named exactly as they appear in code/LaunchDarkly,
   in `code formatting` — never paraphrased.
