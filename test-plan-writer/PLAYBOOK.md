@@ -237,6 +237,8 @@ real one, and the tester only finds out after the login screen.
 6. **Normalise the format to what the product expects.** Sheets store dates as ISO strings or as
    serials (base `1899-12-30`); the UI usually wants locale format. Convert once, in the plan, so
    the tester never does it. State both if there is any doubt.
+   **Write the member as "Plan: Member ID `X`, DOB MM/DD/YYYY" and stop there.** No "(Test Data
+   row 6)", tab name or sheet pointer in brackets. The tester needs the values, not where you found them.
 7. **Clean up after yourself.** If you added scratch formulas or a scratch tab to a shared
    source-of-truth sheet, remove them and say you did. If the grid has no spare columns, use a
    temporary tab rather than expanding the source data's grid.

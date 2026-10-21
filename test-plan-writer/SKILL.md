@@ -1,7 +1,7 @@
 ---
 name: test-plan-writer
 description: "Write a test plan for a ticket, feature, or change as an end-to-end user journey rather than a checklist of acceptance criteria. Walks the workflow the way a real user would, confirms existing business logic still holds, and puts the effort on the edge cases that survive normal testing — records created before the change, the thing that got removed, missing optional data, stale state after a switch. Generates the questions to ask engineering about which fields and collections a change touches instead of guessing at them. Use when asked to write or review a test plan, a QA plan, UAT steps, a validation plan, or test cases for a ticket; when asked how to test a feature or what could break; or when a test plan reads like restated acceptance criteria and needs rewriting as a journey."
-version: 3.4.0
+version: 3.5.0
 author: Divy Sharma
 license: MIT
 metadata:
@@ -12,6 +12,7 @@ metadata:
 
 | Version | Date | Changes |
 |---|---|---|
+| **v3.5.0** | **2026-10-21** | **Members row = plan, member ID, DOB. No source in brackets.** The Setup table's Members row now lists the member ID and date of birth (MM/DD/YYYY) for each plan, and never a pointer like "Test Data row 6" or a tab name. The Jira-comment rule that kept member IDs out of the ticket is reversed to match, since they are fake test members. Source: the ICS-48 plan, where the Members row named sheet rows but no IDs, so the tester had to go look them up. |
 | **v3.4.0** | **2026-09-30** | **Posting a plan as a Jira comment.** New Workflow step 16 and a *Posting to a Jira ticket* section. A ticket comment is not the doc: it skips everything above Setup (doc link, Problem, Status, Most likely failure, What changes, What didn't change), since the ticket already says that, and starts straight at the Setup table. It opens with a short, warm note that tags the dev by mention, with a generic cheer-up line by default (a specific compliment only when it's natural, never dug up from their unrelated work). It ends on the steps, not an open-questions list. Source: posting the ICS-23/24/27 plans, where the full doc header restated the ticket and the dev only needed the steps. |
 | **v3.3.0** | **2026-08-05** | **Test data is a first-class step, not a placeholder.** New Workflow step 7 (*Resolve the test data before writing setup*) and PLAYBOOK §9 *Sourcing test data*: name the tab not just the workbook, look up by keyword with formulas rather than bulk reads (large sheets truncate, and a truncated read looks complete), prefer a pre-bundled identifier column, `COUNTIF` before taking the first match, and match the sub-dimension the gate actually reads. Adds the alias check (verify a tenant name against the sheet's distinct list before writing it into a plan — names from call transcripts are often wrong), the "no test member for X ages badly" rule, the distinction between *no member* and *tenant not configurable in this environment*, five test-data traps, and a clean-up-your-scratch-work rule for shared source-of-truth sheets. Source: three PO-review plans where the call's health plan ("Avira") did not exist in the worksheet at all, a documented "no HMSA test member" blocker turned out to be stale with five members available, and the only listed member for one tenant was the wrong line of business for the rule being tested. |
 | **v3.2.0** | **2026-08-04** | **Written for the person clicking, and grounded in the diff.** Two additions. (1) **No coding language in the plan body** — field names, status codes, hook names, repo and PR numbers, and language trivia go in a Reference footer, never in a step. Every step now answers *where to go / what to do / how it should look*, rendered as a table once there's more than one setup phase. (2) **Read the shipped diff before writing steps** — new Workflow step 6 plus PLAYBOOK §7 *Mining the diff*. On the ticket that prompted this, the diff answered five of eight questions that had been queued for humans, and produced the highest-value step in the plan (a bug the devs hit and fixed). Added five edge-case generators (the deleted key, the loading race, the deliberately-unchanged sibling, the pre-validator record, case-insensitive vs typo-tolerant), three assumption traps (ACs contradicting shipped code, a ticket's example values treated as real, a test account that cannot match the gate), and the false-pass check. Source: a group-based access-control plan where the ticket's own acceptance criteria contradicted the merged code, and a draft config carried a one-character typo in exactly the field the feature fails silently on. |
@@ -195,7 +196,9 @@ Nothing is written back to the tracker until you say so.
    tenant but wrong line of business is the most common false pass in this whole method. Verify the
    tenant name really exists there before writing it down; names from calls and memory are often
    subtly wrong. If a prior doc says "there is no test member for X", re-check rather than repeat
-   it. Method and traps in PLAYBOOK §9.
+   it. Method and traps in PLAYBOOK §9. In the plan, the Members row gives the plan, member ID and
+   date of birth (portal format, MM/DD/YYYY) and nothing else: no "Test Data row 6", tab name or
+   sheet pointer in brackets. Where the data came from is for you, not the reader.
 
 8. **Find the consequence.** What does this data *do* downstream? A field that only renders is
    low stakes. A field that decides money, routing, eligibility, or who gets notified is where
@@ -268,8 +271,8 @@ Google Doc. The comment goes straight from the note to the **Setup** table, then
   comments or the assignee field), not plain `@name` text.
 - **No open-questions list at the bottom.** The comment ends on the last Part. If something is
   blocking a step (missing logins, a flag state), fold it into the note as one short ask.
-- **Keep test data out of the comment.** Link to the rows in the test-data sheet instead of
-  writing member IDs or DOBs into the ticket.
+- **The Members row carries the member ID and DOB** (these are fake test members), written as
+  "Plan: Member ID `X`, DOB MM/DD/YYYY". Never add the sheet, tab or row number in brackets.
 - Confirm before posting, like any other tracker write. To fix a posted comment, edit it in
   place rather than posting a second one.
 
