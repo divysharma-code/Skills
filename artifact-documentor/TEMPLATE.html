@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{{KEY}} {{Two to four word topic}}</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Teal = a guard that exists or the breakthrough. Amber = the missing guard or a turn in the story. */
+:root {
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --fg: #1a2230;
+  --muted: #586478;
+  --line: #c7cfdb;
+  --guard: #0d7466;
+  --guard-soft: #e1f2ef;
+  --gap: #a85a0c;
+  --gap-soft: #fbeedd;
+  --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10151c; --surface: #17202a; --fg: #e5e9ef; --muted: #9ba6b6; --line: #334152;
+    --guard: #45c3ae; --guard-soft: #133631; --gap: #eba556; --gap-soft: #3a2a17;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10151c; --surface: #17202a; --fg: #e5e9ef; --muted: #9ba6b6; --line: #334152;
+  --guard: #45c3ae; --guard-soft: #133631; --gap: #eba556; --gap-soft: #3a2a17;
+  color-scheme: dark;
+}
+
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.6; margin: 0; }
+.wrap { max-width: 980px; margin: 0 auto; padding-block: 40px 72px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 48px; }
+section { display: grid; gap: 16px; min-width: 0; }
+h1, h2 { font-family: var(--font-display); font-weight: 600; text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(30px, 5vw, 44px); }
+h2 { font-size: clamp(22px, 3.2vw, 28px); }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 18px; color: var(--fg); }
+.muted { color: var(--muted); }
+code, .mono { font-family: var(--font-mono); font-size: .86em; }
+
+header { display: grid; gap: 14px; }
+.short { display: grid; gap: 10px; border-left: 3px solid var(--guard); padding: 4px 0 4px 18px; max-width: 72ch; }
+.short p { max-width: none; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.diagram { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+.diagram svg { display: block; width: 100%; min-width: 760px; height: auto; color: var(--fg); font-family: var(--font-body); }
+figcaption { font-size: 14px; color: var(--muted); max-width: 72ch; }
+
+.terms { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.term { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 4px; min-width: 0; }
+.term b { font-size: 14px; }
+.term span { font-size: 14px; color: var(--muted); }
+
+ol.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+ol.timeline li { display: grid; grid-template-columns: 92px 1fr; gap: 16px; padding: 12px 0; border-top: 1px solid var(--line); }
+ol.timeline li:last-child { border-bottom: 1px solid var(--line); }
+.date { font-family: var(--font-mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 2px; }
+.event { display: grid; gap: 2px; min-width: 0; }
+.event b { font-weight: 600; }
+.event span { color: var(--muted); font-size: 15px; }
+li.turn .date { color: var(--gap); font-weight: 500; }
+li.found .date { color: var(--guard); font-weight: 500; }
+
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 15px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .06em; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.tag.v { background: var(--guard-soft); color: var(--guard); }
+.tag.i { background: var(--gap-soft); color: var(--gap); }
+.tag.u { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+
+.ref { font-size: 14px; color: var(--muted); display: grid; gap: 6px; }
+.ref ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+
+@media (max-width: 520px) {
+  ol.timeline li { grid-template-columns: 1fr; gap: 4px; }
+}
+</style>
+</head><body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">{{KEY}} · {{Client}} · Root cause walkthrough</div>
+  <h1>{{The finding as one short sentence, built on an image}}</h1>
+  <div class="short">
+    <p class="lede">{{What is wanted. Where the gap is. What it causes. Three short sentences.}}</p>
+    <p class="muted">{{The open question, who asked it, what would answer it, and whether anyone has.}}</p>
+  </div>
+</header>
+
+<section>
+  <div class="eyebrow">Terms used on this page</div>
+  <div class="terms">
+    <!-- One card per term or acronym used anywhere below. Expand the acronym in the bold part. -->
+    <div class="term"><b>{{TERM (Full Name)}}</b><span>{{One or two plain sentences.}}</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>{{How a request reaches the system}}</h2>
+  <figure>
+    <div class="diagram">
+      <!-- Two-lane flow. Lane 1 = path with the guard (teal box). Lane 2 = path without it (amber dashed box).
+           Both lanes end in one tall box on the right. Add or remove plain boxes at 130px steps; keep y values. -->
+      <svg viewBox="0 0 1000 400" role="img" aria-label="{{Describe both paths and where they meet, in one or two sentences.}}">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"></path>
+          </marker>
+        </defs>
+        <text x="20" y="62" font-size="13" font-weight="700" fill="currentColor">{{Path 1 · label}}</text>
+        <text x="20" y="272" font-size="13" font-weight="700" fill="currentColor">{{Path 2 · label}}</text>
+
+        <g fill="var(--surface)" stroke="var(--line)" stroke-width="1.5">
+          <rect x="20" y="80" width="100" height="64" rx="8"></rect>
+          <rect x="150" y="80" width="120" height="64" rx="8"></rect>
+          <rect x="470" y="80" width="130" height="64" rx="8"></rect>
+          <rect x="630" y="80" width="110" height="64" rx="8"></rect>
+          <rect x="20" y="290" width="100" height="64" rx="8"></rect>
+          <rect x="150" y="290" width="120" height="64" rx="8"></rect>
+        </g>
+        <rect x="300" y="80" width="140" height="64" rx="8" fill="var(--guard-soft)" stroke="var(--guard)" stroke-width="2"></rect>
+        <rect x="300" y="290" width="140" height="64" rx="8" fill="var(--gap-soft)" stroke="var(--gap)" stroke-width="2" stroke-dasharray="6 5"></rect>
+
+        <g font-size="13" fill="currentColor" text-anchor="middle">
+          <text x="70" y="108" font-weight="600">{{Step}}</text>
+          <text x="70" y="126" fill="var(--muted)">{{detail}}</text>
+          <text x="210" y="108" font-weight="600">{{Step}}</text>
+          <text x="210" y="126" fill="var(--muted)">{{detail}}</text>
+          <text x="370" y="108" font-weight="600" fill="var(--guard)">{{The guard}}</text>
+          <text x="370" y="126" fill="var(--guard)">{{whose it is}}</text>
+          <text x="535" y="108" font-weight="600">{{Step}}</text>
+          <text x="535" y="126" fill="var(--muted)">{{detail}}</text>
+          <text x="685" y="108" font-weight="600">{{Step}}</text>
+          <text x="685" y="126" fill="var(--muted)">{{detail}}</text>
+
+          <text x="70" y="318" font-weight="600">{{Step}}</text>
+          <text x="70" y="336" fill="var(--muted)">{{detail}}</text>
+          <text x="210" y="318" font-weight="600">{{Step}}</text>
+          <text x="210" y="336" fill="var(--muted)">{{detail}}</text>
+          <text x="370" y="318" font-weight="600" fill="var(--gap)">{{No check}}</text>
+          <text x="370" y="336" fill="var(--gap)">{{why}}</text>
+        </g>
+
+        <g stroke="currentColor" stroke-width="1.5" fill="none" marker-end="url(#arrow)">
+          <line x1="120" y1="112" x2="148" y2="112"></line>
+          <line x1="270" y1="112" x2="298" y2="112"></line>
+          <line x1="440" y1="112" x2="468" y2="112"></line>
+          <line x1="600" y1="112" x2="628" y2="112"></line>
+          <line x1="740" y1="112" x2="778" y2="112"></line>
+          <line x1="120" y1="322" x2="148" y2="322"></line>
+          <line x1="270" y1="322" x2="298" y2="322"></line>
+          <line x1="440" y1="322" x2="778" y2="322"></line>
+        </g>
+        <text x="535" y="160" font-size="12" text-anchor="middle" fill="var(--muted)">{{note under a step}}</text>
+        <text x="610" y="310" font-size="12" text-anchor="middle" fill="var(--muted)">{{note on the long path 2 arrow}}</text>
+
+        <rect x="780" y="80" width="200" height="274" rx="10" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"></rect>
+        <line x1="780" y1="150" x2="980" y2="150" stroke="var(--line)" stroke-width="1"></line>
+        <line x1="780" y1="284" x2="980" y2="284" stroke="var(--line)" stroke-width="1"></line>
+        <g text-anchor="middle" fill="currentColor">
+          <text x="880" y="106" font-size="11" fill="var(--muted)">{{what is saved}}</text>
+          <text x="880" y="128" font-size="12" font-family="var(--font-mono)" fill="var(--guard)">{{value on path 1 (likely)}}</text>
+          <text x="880" y="210" font-size="14" font-weight="700">{{Where both paths meet}}</text>
+          <text x="880" y="230" font-size="13" fill="var(--muted)">{{what happens}}</text>
+          <text x="880" y="248" font-size="13" fill="var(--muted)">{{there}}</text>
+          <text x="880" y="310" font-size="11" fill="var(--muted)">{{what is saved}}</text>
+          <text x="880" y="332" font-size="12" font-family="var(--font-mono)" fill="var(--gap)">{{value on path 2 (likely)}}</text>
+        </g>
+        <text x="880" y="384" font-size="12" text-anchor="middle" fill="currentColor" font-weight="600">{{What this difference answers}}</text>
+      </svg>
+    </div>
+    <figcaption>{{Why the two paths look the same to staff, and what actually tells them apart. Name the field in code.}}</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>What happened, in order</h2>
+  <ol class="timeline">
+    <!-- class="turn": the story changed (max 3). class="found": the answer (max 1). -->
+    <li><div class="date">{{Mon D}}</div><div class="event"><b>{{What happened, as a headline}}</b><span>{{One plain sentence of detail.}}</span></div></li>
+    <li class="turn"><div class="date">{{Mon D}}</div><div class="event"><b>{{The story changes}}</b><span>{{Detail.}}</span></div></li>
+    <li class="found"><div class="date">{{Mon D}}</div><div class="event"><b>{{The answer}}</b><span>{{Detail.}}</span></div></li>
+  </ol>
+</section>
+
+<section>
+  <h2>How the answer decides who owns it</h2>
+  <figure>
+    <div class="diagram">
+      <svg viewBox="0 0 1000 250" role="img" aria-label="{{Read X. If A, then owner 1. If B, then owner 2.}}">
+        <defs>
+          <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"></path>
+          </marker>
+        </defs>
+        <rect x="20" y="93" width="210" height="64" rx="8" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"></rect>
+        <text x="125" y="120" font-size="13" font-weight="700" text-anchor="middle" fill="currentColor">{{Check to run}}</text>
+        <text x="125" y="139" font-size="13" text-anchor="middle" fill="var(--muted)">{{on what}}</text>
+
+        <g stroke="currentColor" stroke-width="1.5" fill="none" marker-end="url(#arrow2)">
+          <path d="M230 112 C 290 112, 300 55, 358 55"></path>
+          <path d="M230 138 C 290 138, 300 195, 358 195"></path>
+          <line x1="580" y1="55" x2="638" y2="55"></line>
+          <line x1="580" y1="195" x2="638" y2="195"></line>
+        </g>
+        <text x="282" y="68" font-size="12" text-anchor="middle" fill="var(--guard)">{{result A}}</text>
+        <text x="282" y="190" font-size="12" text-anchor="middle" fill="var(--gap)">{{result B}}</text>
+
+        <rect x="360" y="23" width="220" height="64" rx="8" fill="var(--guard-soft)" stroke="var(--guard)" stroke-width="1.5"></rect>
+        <text x="470" y="50" font-size="13" font-weight="700" text-anchor="middle" fill="var(--guard)">{{Meaning of A}}</text>
+        <text x="470" y="69" font-size="13" text-anchor="middle" fill="currentColor">{{so what}}</text>
+
+        <rect x="360" y="163" width="220" height="64" rx="8" fill="var(--gap-soft)" stroke="var(--gap)" stroke-width="1.5"></rect>
+        <text x="470" y="190" font-size="13" font-weight="700" text-anchor="middle" fill="var(--gap)">{{Meaning of B}}</text>
+        <text x="470" y="209" font-size="13" text-anchor="middle" fill="currentColor">{{so what}}</text>
+
+        <rect x="640" y="23" width="340" height="64" rx="8" fill="var(--surface)" stroke="var(--line)" stroke-width="1.5"></rect>
+        <text x="810" y="50" font-size="13" font-weight="700" text-anchor="middle" fill="currentColor">{{Owner 1 and type of work}}</text>
+        <text x="810" y="69" font-size="13" text-anchor="middle" fill="var(--muted)">{{who acts}}</text>
+
+        <rect x="640" y="163" width="340" height="64" rx="8" fill="var(--surface)" stroke="var(--line)" stroke-width="1.5"></rect>
+        <text x="810" y="190" font-size="13" font-weight="700" text-anchor="middle" fill="currentColor">{{Owner 2 and type of work}}</text>
+        <text x="810" y="209" font-size="13" text-anchor="middle" fill="var(--muted)">{{who acts}}</text>
+      </svg>
+    </div>
+    <figcaption>{{Where this split was agreed (call, date) and why the fix keys on what it keys on.}}</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>{{Why it stayed stuck for N months}}</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>What people tried</th><th>Why it didn't work</th><th>Tag</th></tr></thead>
+      <tbody>
+        <!-- Tags: <span class="tag v">VERIFIED</span> <span class="tag i">INFERRED</span> <span class="tag u">UNVERIFIED</span>
+             Last row: "What nobody tried: ..." -->
+        <tr><td>{{Attempt}}</td><td>{{Why it failed}}</td><td><span class="tag v">VERIFIED</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>What is known and what is not</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Claim</th><th>Evidence</th><th>Tag</th></tr></thead>
+      <tbody>
+        <!-- Order: VERIFIED, then INFERRED, then UNVERIFIED. The claim must not outrun its evidence ("in code"). -->
+        <tr><td>{{Claim}}</td><td>{{Evidence, with <code>Class.field</code> if code}}</td><td><span class="tag v">VERIFIED</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- OPTIONAL, engineers only: delete this section for a stakeholder page.
+<section>
+  <h2>Questions the code answered</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>PM asked</th><th>Engineer answered</th><th>Tag</th></tr></thead>
+      <tbody>
+        <tr><td>{{question}}</td><td>{{answer, with file:line}}</td><td><span class="tag v">VERIFIED</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+-->
+
+<section class="ref">
+  <div class="eyebrow">Reference</div>
+  <ul>
+    <li>Tickets: {{keys, duplicates, originals}}</li>
+    <li>Code ({{repo}}, {{branch}}): {{<code>File.groovy</code> Lnn}}</li>
+    <li>Sources: {{docs, calls with dates, threads with dates}}</li>
+    <li>Case examples are tracking numbers only. No member IDs or dates of birth are on this page.</li>
+  </ul>
+</section>
+
+</div>
+</body></html>
