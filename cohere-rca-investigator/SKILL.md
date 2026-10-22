@@ -1,7 +1,7 @@
 ---
 name: cohere-rca-investigator
 description: "Investigate ONE Cohere ticket (CTS, COH, IPS, ICS, DP) end to end, with the user reproducing it live, and produce the RCA plus ready-to-use drafts. Fixed order: ticket, plain-English brief, docs, human context, code, screen-by-screen flow, test data, live repro from screenshots, business impact, fix decision (council), grill, write-up. Every claim is tagged VERIFIED, INFERRED or UNVERIFIED, and a guess is replaced as soon as better evidence shows up. Outputs (draft only): a Google Doc with the screenshots, an impact tab, a Jira description, a Slack message. Use when asked to investigate, RCA, root-cause, reproduce, 'explain the workflow', or 'help me understand' a specific ticket, especially as a newcomer. For the daily board-1487 queue use cohere-bug-triage instead."
-version: 2.1.0
+version: 2.2.0
 author: Divy Sharma
 license: MIT
 metadata:
@@ -19,6 +19,7 @@ as the strongest evidence.
 
 | Version | Date | Change |
 |---|---|---|
+| 2.2.0 | 2026-10-22 | From a 5-ticket run on board 8105: Q&A cap 8 to 12 rounds, code-search rate-limit guidance, open ticket attachments, analytics-ticket shape, RALF field-name trap. |
 | 2.1.0 | 2026-10-22 | SPM and Engineer Q&A loop (grill-me built in, see QNA-LOOP.md) runs during the code step, so the PM's questions are answered from the repo before the human is asked. The human grill now covers only what the loop could not answer. Source: COH-8221, where the grill step was skipped. |
 | 2.0.0 | 2026-10-13 | Plain English before anything else. Real screen titles from code. Live screenshot repro loop. Fix-sketch testing. Impact chain with a "could not connect" list. Council at real forks only. One-at-a-time grill. Draft outputs: doc with screenshots, impact tab, Jira description, Slack message. Source: the COH-8363 investigation. |
 | 1.0.0 | 2026-09 | Ticket, docs, human context, code, write-up. Archived in `archive/`. |
@@ -37,7 +38,10 @@ as the strongest evidence.
 
 1. **Ticket.** Pull it from Jira (Basic auth from `~/.config/jira/credentials.env`; include
    comments, clones, linked issues, earlier reports of the same bug). Split the reporter's
-   claims into separate complaints and judge each: true / partly / not true, with why.
+   claims into separate complaints and judge each: true / partly / not true, with why. Open the
+   ticket's screenshots and attachments too; they often show the exact screen or count.
+   An analytics or reporting ticket ("X is no longer reportable") is a different shape: first
+   find where the number is stamped, then ask whether the traffic moved or the stamp broke.
 2. **Plain-English brief.** Five lines: what the problem is, with any domain term defined
    before it is used (e.g. what "Observation" means), plus an ELI5 analogy. Say what you are
    sure of and what you are not. Do this before docs or code.
@@ -125,6 +129,7 @@ as the strongest evidence.
 | Cited a validator from a different form | Confirm it is wired to this screen |
 | Asked the first grill question before explaining the problem | Brief first, always |
 | Predicted what the next screen would be | Say what to look for, not what it will be |
+| Read a RALF field by its name (`groupId` there means procedure codes, not a member's group) | Read what the field holds in code |
 | Treated "reproduced" as "proven" | Separate the form state, the saved value, and the downstream effect |
 
 ## Boundaries

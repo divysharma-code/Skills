@@ -50,7 +50,7 @@ chat. No member IDs, dates of birth or names in any prompt.
 | Condition | Then |
 |---|---|
 | SPM returns DONE | Move on. |
-| 8 rounds reached | Stop and list the open branches. |
+| 12 rounds reached | Stop and list the open branches. (8 cut off the last branches on COH-8147.) |
 | The same branch comes back UNVERIFIED twice | Park it and move to the next branch. |
 
 ## What comes out
@@ -60,6 +60,14 @@ chat. No member IDs, dates of birth or names in any prompt.
 | Round log: SPM asked, Engineer answered, tag, evidence | Template section "How the code answered the PM's questions" |
 | Overturned assumptions | "What I got wrong" |
 | Parked and UNVERIFIED branches | "Still unverified", then step 11 (the human grill) |
+
+## Search budget
+
+GitHub code search allows 10 queries a minute. Fetch the repo file tree once and filter it
+locally, then read files with `gh api .../contents/<path>?ref=develop`. Use code search only for
+a name the tree can't find, and space those calls out. If a search is rate-limited, wait for it
+instead of reading the empty result as "not found". RALF redirects some Integrations questions
+to `integration-ai`, so follow that pointer.
 
 ## Why the standing question exists
 

@@ -17,6 +17,8 @@ if "\u2014" in visible:
 for section in re.findall(r"<section[^>]*>(.*?)</section>", visible, flags=re.S):
     heading = re.search(r"<h2>(.*?)</h2>", section)
     name = heading.group(1) if heading else "untitled section"
+    if "still open" in name.lower():
+        continue
     body = "".join(re.findall(r"<tbody>(.*?)</tbody>", section, flags=re.S))
     for row in re.findall(r"<tr>(.*?)</tr>", body, flags=re.S):
         if 'class="tag' not in row:
@@ -25,6 +27,9 @@ for section in re.findall(r"<section[^>]*>(.*?)</section>", visible, flags=re.S)
 
 if re.search(r"\b(0[1-9]|1[0-2])/(0[1-9]|[12]\d|3[01])/(19|20)\d{2}\b", visible):
     problems.append("MM/DD/YYYY date found; could be a date of birth (PHI)")
+
+if re.search(r"\(?\b\d{3}\)?[-. ]\d{3}[-. ]\d{4}\b", visible):
+    problems.append("phone number found; remove it (PHI)")
 
 if len(re.findall(r'<li class="turn">', visible)) > 3:
     problems.append('more than 3 timeline "turn" rows')

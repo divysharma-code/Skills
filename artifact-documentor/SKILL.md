@@ -1,7 +1,7 @@
 ---
 name: artifact-documentor
 description: "The artifact documentor. Turns a finished Cohere RCA (root cause analysis) into a one-page visual walkthrough, published as a private Artifact. The page has a finding-as-headline, a plain-English answer box, term cards, a flow diagram showing where a guard exists and where it is missing, a dated timeline, a diagram of how the answer decides who owns it, a 'why it stayed stuck' table and a 'what is known and what is not' table tagged VERIFIED, INFERRED or UNVERIFIED. Use when asked for the artifact documentor, an insight page, a visual RCA, an explainer page, an artifact for an RCA, 'create a flow diagram and explain what happened', or to share an investigation with a stakeholder or engineers. It does not investigate: run cohere-rca-investigator first, or paste an RCA."
-version: 1.0.0
+version: 1.1.0
 author: Divy Sharma
 license: MIT
 metadata:
@@ -17,6 +17,9 @@ page's exact CSS and layout with the content removed.
 
 ## Quick start
 
+0. Check you can publish before building: the Artifact tool needs a claude.ai login. If the
+   session uses `apiKeyHelper` it refuses every call. Then build the file, save it to the
+   Desktop, and tell the user to unset `apiKeyHelper` and run `/login` to get links.
 1. Get the RCA: the `cohere-rca-investigator` write-up in this chat, a pasted RCA, or a doc.
 2. Load `artifact-design`, then `artifact-diagramming`.
 3. Copy TEMPLATE.html to the job's tmp folder as `<key>-insight.html` and fill every `{{...}}`.
@@ -51,7 +54,16 @@ asked, Engineer answered, tag). Add it only when the reader is an engineer.
   in health-plan config.
 - **Define before use.** Any term on the page has a card. Expand every acronym on first use.
 - **Timeline classes.** `turn` for an event that changed the story, `found` for the answer.
-  At most 3 `turn` rows and 1 `found` row, or the colour stops meaning anything.
+  At most 3 `turn` rows and 1 `found` row, or the colour stops meaning anything. If the
+  ticket ends on an open question, use no `found` row and end on the question, in plain text.
+- **Unconfirmed names.** A screen or field name the code did not confirm gets "(unconfirmed)"
+  after it, in the diagram and the text.
+- **Page variants.** Data fix (a one-time migration): replace flow diagram 1 with a
+  before-and-after of the data, and put the risk of running it in the answer box. Analytics
+  or reporting gap: the flow diagram shows where the count is stamped, and the ownership
+  diagram splits on "did the traffic move, or did the stamp break".
+- **Still open.** End with a "Still open" table (open item, who can answer). It is the only
+  table that needs no tag.
 - **Plain English.** Short sentences, no em dashes, no arrow chains in prose. Ticket keys and
   config strings go in Reference, except in the eyebrow and the code citations.
 - **No PHI.** Tracking numbers are fine. Member IDs, dates of birth and member names are not.
