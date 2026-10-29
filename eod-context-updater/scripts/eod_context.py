@@ -200,6 +200,16 @@ def cmd_sweep(a):
     print("\n".join(quiet) or "none")
 
 
+import re
+
+_HEADER_RE = re.compile(r"^\s*(?:\U0001F916\s*)?(?:\*\*)?EOD Status\s*\([^)]*\):?(?:\*\*)?:?\s*(?:\U0001F916\s*)?", re.I)
+
+
+def strip_header(text):
+    """The robot and bold header are added when the comment is built; drop any copy already in the text."""
+    return _HEADER_RE.sub("", text, count=1).strip()
+
+
 def cmd_post(a):
     c = creds()
     date = dt.date.fromisoformat(a.date) if a.date else last_working_day()
@@ -208,6 +218,7 @@ def cmd_post(a):
         sys.exit("Comment contains an em dash. Rewrite it.")
     if "\n" in line:
         sys.exit("EOD comment must be one sentence on one line.")
+    line = strip_header(line)
     body = {
         "type": "doc", "version": 1,
         "content": [{"type": "paragraph", "content": [

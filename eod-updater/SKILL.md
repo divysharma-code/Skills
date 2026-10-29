@@ -85,11 +85,15 @@ shipped from a parent in the doc.
 
 ### 5. Write one sentence per ticket
 
-Format, exactly:
+The comment Jira shows is:
 
 ```
 🤖 **EOD Status (YYYY-MM-DD):** <one sentence on what moved and why> Next: <one short line, the single next step>.
 ```
+
+The script adds the 🤖 and the bold `EOD Status (date):` header itself. Pass `--text` ONLY the
+sentence and the `Next:` clause, with no header, no 🤖, and no `**`. Passing the full line
+posts the header twice, the second copy as literal asterisks.
 
 - Two parts on ONE line (the script rejects line breaks): the status sentence, then a `Next:` clause. No bullets, no second paragraph.
 - Status sentence: what moved and why, plus any blocker, PR, or who is waiting on whom.
@@ -105,7 +109,7 @@ Show a table (Ticket | End-of-day status | Comment incl. Next step) and post. Po
 this skill, so do not ask again if the user already said to run it.
 
 ```bash
-python3 scripts/eod.py post ICS-26 --date 2026-09-30 --text "<the sentence>"
+python3 scripts/eod.py post ICS-26 --date 2026-09-30 --text "<the sentence + Next: clause, no header>"
 ```
 
 The script skips a ticket that already has a 🤖 EOD comment for `DATE`; if one exists

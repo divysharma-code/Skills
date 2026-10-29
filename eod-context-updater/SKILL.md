@@ -1,7 +1,7 @@
 ---
 name: eod-context-updater
 description: Post a one-sentence EOD status comment on every ticket in a Cohere Intake squad's (Ibex, Aries, Cabra) active sprint that had real activity on a day, built from Jira comments, the squad's standup and grooming calls in Fellow, and Slack threads. Use when the user says "run EOD", "run EOD with context", "post EOD updates", "EOD from Slack and Fellow", "update every ticket from standup and Slack", or "update tickets for yesterday".
-version: 2.0.0
+version: 2.0.1
 author: Divy Sharma
 license: MIT
 metadata:
@@ -141,11 +141,15 @@ evidence gets no comment. Never write "no update" filler.
 
 ### 7. Write one sentence per ticket
 
-Exact format:
+The comment Jira shows is:
 
 ```text
 🤖 **EOD Status (YYYY-MM-DD):** <one sentence>
 ```
+
+The script adds the 🤖 and the bold `EOD Status (date):` header itself. Pass `--text` ONLY the
+sentence, with no header, no 🤖, and no `**`. Passing the full line posts the header twice, the
+second copy as literal asterisks.
 
 - One sentence. No bullets, no second paragraph.
 - Say what moved or was decided, why, and what happens next (blocker, PR, who is waiting on whom).
